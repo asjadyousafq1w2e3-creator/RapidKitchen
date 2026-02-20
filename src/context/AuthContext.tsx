@@ -38,15 +38,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let isMounted = true;
 
     // Listener for ongoing auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!isMounted) return;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        setTimeout(() => checkAdmin(session.user.id), 0);
+        await checkAdmin(session.user.id);
       } else {
         setIsAdmin(false);
       }
+      setLoading(false);
     });
 
     // Initial load — wait for admin check before setting loading false

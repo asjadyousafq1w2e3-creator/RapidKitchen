@@ -16,7 +16,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
 
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/account" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
