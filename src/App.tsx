@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import CartDrawer from "@/components/CartDrawer";
+import ChatWidget from "@/components/ChatWidget";
 import Index from "./pages/Index";
 import ProductPage from "./pages/ProductPage";
 import ShopPage from "./pages/ShopPage";
@@ -35,6 +36,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <CartDrawer />
+            <ChatWidget />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<ShopPage />} />
