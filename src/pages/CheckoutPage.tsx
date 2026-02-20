@@ -30,16 +30,12 @@ const CheckoutPage = () => {
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      window.location.href = "/auth";
-      return;
-    }
     setPlacingOrder(true);
     try {
       const { data: order, error } = await supabase
         .from("orders")
         .insert({
-          user_id: user.id,
+          user_id: user?.id || null,
           total_price: total,
           status: "pending",
           shipping_address: shippingData,
