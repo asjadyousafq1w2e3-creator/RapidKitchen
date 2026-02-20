@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
   Plus, Edit2, Trash2, X, Save, Search, Filter, Eye, Package,
-  ChevronDown, Upload, Image as ImageIcon
+  ChevronDown, Upload, Image as ImageIcon, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 const emptyProduct = {
   name: "", slug: "", price: 0, original_price: null, description: "",
@@ -251,10 +253,25 @@ const AdminProducts = () => {
   );
 };
 
+const uploadImage = async (file: File): Promise<string | null> => {
+  const ext = file.name.split(".").pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { data, error } = await supabase.storage
+    .from("product-images")
+    .upload(fileName, file, { contentType: file.type });
+  if (error) {
+    toast.error("Upload failed: " + error.message);
+    return null;
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/product-images/${data.path}`;
+};
+
 const ProductForm = ({
   product, categories, onSave, onCancel
 }: { product: any; categories: any[]; onSave: (p: any) => void; onCancel: () => void }) => {
   const [form, setForm] = useState({ ...product });
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,6 +279,30 @@ const ProductForm = ({
   };
 
   const set = (key: string, value: any) => setForm({ ...form, [key]: value });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    const currentImages = Array.isArray(form.images) ? [...form.images] : [];
+
+    for (const file of Array.from(files)) {
+      const url = await uploadImage(file);
+      if (url) currentImages.push(url);
+    }
+
+    set("images", currentImages);
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (index: number) => {
+    const imgs = Array.isArray(form.images) ? [...form.images] : [];
+    imgs.splice(index, 1);
+    set("images", imgs);
+  };
+
+  const currentImages = Array.isArray(form.images) ? form.images : [];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -317,11 +358,75 @@ const ProductForm = ({
         />
       </div>
 
-      <FormField
-        label="Images (comma-separated URLs)"
-        value={Array.isArray(form.images) ? form.images.join(", ") : form.images || ""}
-        onChange={(v) => set("images", v)}
-      />
+      {/* Image Upload Section */}
+      <div>
+        <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Product Images</label>
+        
+        {/* Current Images Preview */}
+        {currentImages.length > 0 && (
+          <div className="flex flex-wrap gap-3 mb-3">
+            {currentImages.map((img: string, i: number) => (
+              <div key={i} className="relative group w-20 h-20 rounded-xl overflow-hidden border border-border bg-secondary">
+                <img src={img} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                >
+                  <Trash2 className="w-4 h-4 text-destructive-foreground" />
+                </button>
+                {i === 0 && (
+                  <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-primary-foreground text-[9px] text-center py-0.5">Main</span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Upload Button & URL Input */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-border hover:border-primary text-sm text-muted-foreground hover:text-primary transition-all disabled:opacity-50"
+          >
+            {uploading ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
+            ) : (
+              <><Upload className="w-4 h-4" /> Upload Images</>
+            )}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          <div className="flex-1 flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">or</span>
+            <input
+              type="text"
+              placeholder="Paste image URL and press Enter"
+              className="flex-1 px-3 py-2.5 rounded-xl bg-background border border-border text-foreground text-sm outline-none focus:border-primary transition-colors"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const input = e.currentTarget;
+                  const url = input.value.trim();
+                  if (url) {
+                    set("images", [...currentImages, url]);
+                    input.value = "";
+                  }
+                }
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
       <FormField
         label="Features (comma-separated)"
         value={Array.isArray(form.features) ? form.features.join(", ") : form.features || ""}
