@@ -36,9 +36,17 @@ const Navbar = () => {
   }, [location]);
 
   useEffect(() => {
+    const cached = sessionStorage.getItem("nav_categories");
+    if (cached) {
+      setCategories(JSON.parse(cached));
+      return;
+    }
     const fetchCategories = async () => {
       const { data } = await supabase.from("categories").select("name, slug").order("sort_order");
-      if (data) setCategories(data);
+      if (data) {
+        setCategories(data);
+        sessionStorage.setItem("nav_categories", JSON.stringify(data));
+      }
     };
     fetchCategories();
   }, []);

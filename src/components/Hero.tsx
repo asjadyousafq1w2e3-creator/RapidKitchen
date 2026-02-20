@@ -20,6 +20,9 @@ const Hero = () => {
           src={heroImage}
           alt="Premium kitchen setup with modern gadgets"
           className="w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/20 sm:from-background/90 sm:via-background/50 sm:to-transparent" />
       </motion.div>
