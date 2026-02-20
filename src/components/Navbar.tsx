@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingBag, Menu, X, Search, User, ChevronRight, ChefHat, CupSoda, Scissors, Scale, Sprout, Package, Grid3X3 } from "lucide-react";
+import { ShoppingBag, Menu, X, Search, User, ChevronRight, ChevronDown, ChefHat, CupSoda, Scissors, Scale, Sprout, Package, Grid3X3, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -19,6 +19,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const { totalItems, setIsOpen, justAdded } = useCart();
   const { user } = useAuth();
   const location = useLocation();
@@ -74,20 +75,108 @@ const Navbar = () => {
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                to={link.href}
-                className={`text-sm font-medium transition-colors relative group ${
-                  location.pathname === link.href ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+            <Link
+              to="/shop"
+              className={`text-sm font-medium transition-colors relative group ${
+                location.pathname === "/shop" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Shop
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                location.pathname === "/shop" ? "w-full" : "w-0 group-hover:w-full"
+              }`} />
+            </Link>
+
+            {/* Categories Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setCategoriesOpen(true)}
+              onMouseLeave={() => setCategoriesOpen(false)}
+            >
+              <button
+                className={`flex items-center gap-1 text-sm font-medium transition-colors relative group ${
+                  location.pathname.startsWith("/category") ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {link.label}
+                Categories
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${categoriesOpen ? "rotate-180" : ""}`} />
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                  location.pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
+                  location.pathname.startsWith("/category") ? "w-full" : "w-0 group-hover:w-full"
                 }`} />
-              </Link>
-            ))}
+              </button>
+
+              <AnimatePresence>
+                {categoriesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[420px] bg-popover border border-border shadow-lg rounded-xl z-[60] overflow-hidden"
+                  >
+                    <div className="p-4 grid grid-cols-2 gap-1">
+                      {categories.map((cat) => {
+                        const Icon = CATEGORY_ICONS[cat.name] || Package;
+                        const isActive = location.pathname === `/category/${cat.slug}`;
+                        return (
+                          <Link
+                            key={cat.slug}
+                            to={`/category/${cat.slug}`}
+                            onClick={() => setCategoriesOpen(false)}
+                            className={`flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm transition-colors ${
+                              isActive
+                                ? "bg-primary/10 text-primary font-medium"
+                                : "text-foreground hover:bg-secondary"
+                            }`}
+                          >
+                            <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                              isActive ? "bg-primary/20" : "bg-secondary"
+                            }`}>
+                              <Icon className="w-4 h-4" />
+                            </span>
+                            {cat.name}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                    <div className="border-t border-border px-4 py-3">
+                      <Link
+                        to="/shop"
+                        onClick={() => setCategoriesOpen(false)}
+                        className="flex items-center justify-between text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                      >
+                        Browse All Products
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <Link
+              to="/about"
+              className={`text-sm font-medium transition-colors relative group ${
+                location.pathname === "/about" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              About
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                location.pathname === "/about" ? "w-full" : "w-0 group-hover:w-full"
+              }`} />
+            </Link>
+
+            <Link
+              to="/contact"
+              className={`text-sm font-medium transition-colors relative group ${
+                location.pathname === "/contact" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Contact
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                location.pathname === "/contact" ? "w-full" : "w-0 group-hover:w-full"
+              }`} />
+            </Link>
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-2">
