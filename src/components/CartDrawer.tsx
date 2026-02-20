@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
+import { X, Minus, Plus, ShoppingBag, Truck, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 
@@ -72,7 +72,17 @@ const CartDrawer = () => {
               {items.length === 0 ? (
                 <div className="text-center py-16">
                   <ShoppingBag className="w-10 h-10 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground text-sm">Your cart is empty</p>
+                  <p className="text-muted-foreground text-sm mb-4">Your cart is empty</p>
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/shop");
+                    }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Continue Shopping
+                  </button>
                 </div>
               ) : (
                 <AnimatePresence>
@@ -143,6 +153,16 @@ const CartDrawer = () => {
                   className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-all shadow-soft"
                 >
                   Proceed to Checkout
+                </button>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate("/shop");
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Continue Shopping
                 </button>
               </div>
             )}
