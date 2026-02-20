@@ -7,6 +7,7 @@ import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import CartDrawer from "@/components/CartDrawer";
 import { lazy, Suspense } from "react";
+import ScrollToTop from "@/components/ScrollToTop";
 
 // Eagerly load the homepage for instant first paint
 import Index from "./pages/Index";
@@ -52,6 +53,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <CartProvider>
             <Toaster />
