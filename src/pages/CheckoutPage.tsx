@@ -147,19 +147,7 @@ const CheckoutPage = () => {
       // Send order confirmation emails (non-blocking)
       try {
         await supabase.functions.invoke("send-order-email", {
-          body: {
-            orderId: order.id,
-            totalPrice: total,
-            shippingAddress: shippingData,
-            items: items.map((item) => ({
-              product_name: item.product.name,
-              product_image: item.product.images[0],
-              quantity: item.quantity,
-              price: item.product.price,
-              color: item.color || null,
-            })),
-            paymentMethod: "cod",
-          },
+          body: { orderId: order.id },
         });
       } catch (emailErr) {
         console.error("Email notification failed:", emailErr);
