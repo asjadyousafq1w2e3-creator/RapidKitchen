@@ -57,7 +57,7 @@ const AuthPage = () => {
                 {isLogin ? "Welcome Back" : "Create Account"}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {isLogin ? "Sign in to your ChefEase account" : "Join the ChefEase family"}
+                {isLogin ? "Sign in to your RapidKitch account" : "Join the RapidKitch family"}
               </p>
             </div>
 

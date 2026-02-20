@@ -78,7 +78,7 @@ const Navbar = () => {
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <Link to="/" className="font-display text-xl sm:text-2xl tracking-tight text-foreground">
-              Chef<span className="text-primary">Ease</span>
+            Rapid<span className="text-primary">Kitch</span>
             </Link>
           </div>
 
@@ -242,7 +242,7 @@ const Navbar = () => {
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <Link to="/" className="font-display text-xl tracking-tight text-foreground" onClick={() => setMobileOpen(false)}>
-                  Chef<span className="text-primary">Ease</span>
+                  Rapid<span className="text-primary">Kitch</span>
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="p-2 rounded-full hover:bg-secondary transition-colors">
                   <X className="w-5 h-5" />

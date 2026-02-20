@@ -5,8 +5,8 @@ import { Save, Settings, Store, Truck, CreditCard, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 const defaultSettings: Record<string, string> = {
-  store_name: "ChefEase",
-  store_email: "support@chefease.pk",
+  store_name: "RapidKitch",
+  store_email: "support@rapidkitch.com",
   store_phone: "+92 300 1234567",
   store_address: "Lahore, Pakistan",
   currency: "PKR",
@@ -14,8 +14,8 @@ const defaultSettings: Record<string, string> = {
   shipping_fee: "250",
   tax_rate: "0",
   order_notification_email: "",
-  meta_title: "ChefEase - Premium Kitchen Gadgets",
-  meta_description: "Shop premium kitchen gadgets and accessories at ChefEase Pakistan.",
+  meta_title: "RapidKitch - Premium Kitchen Gadgets Pakistan",
+  meta_description: "Shop premium kitchen gadgets and accessories at RapidKitch. Free shipping above PKR 3,000.",
 };
 
 const AdminSettings = () => {

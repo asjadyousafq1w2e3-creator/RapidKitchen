@@ -29,7 +29,7 @@ const Newsletter = () => {
 
           <div className="relative z-10">
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-primary-foreground mb-3 sm:mb-4">
-              Join the ChefEase Family
+              Join the RapidKitch Family
             </h2>
             <p className="text-primary-foreground/70 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
               Get exclusive deals, new arrivals, and kitchen tips delivered to your inbox.

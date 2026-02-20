@@ -16,7 +16,7 @@ const ContactPage = () => {
   const contactInfo = [
     { icon: MapPin, label: "Address", value: "Office 12, Gulberg III, Lahore, Pakistan" },
     { icon: Phone, label: "Phone", value: "+92 321 1234567" },
-    { icon: Mail, label: "Email", value: "hello@chefease.pk" },
+    { icon: Mail, label: "Email", value: "hello@rapidkitch.com" },
     { icon: Clock, label: "Hours", value: "Mon - Sat: 9AM - 8PM PKT" },
   ];
 
