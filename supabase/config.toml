@@ -1,1 +1,4 @@
 project_id = "oljwkvufowfefkjnxrpu"
+
+[functions.validate-coupon]
+verify_jwt = false
