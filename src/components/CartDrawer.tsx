@@ -1,17 +1,19 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 
 const FREE_SHIPPING_THRESHOLD = 3000;
 
 const CartDrawer = () => {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
+  const navigate = useNavigate();
   const shippingProgress = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const freeShipping = totalPrice >= FREE_SHIPPING_THRESHOLD;
 
   const handleCheckout = () => {
     setIsOpen(false);
-    window.location.href = "/checkout";
+    navigate("/checkout");
   };
 
   return (

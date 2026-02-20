@@ -307,9 +307,10 @@ const CheckoutPage = () => {
 
                       <button
                         type="submit"
-                        className="w-full py-4 rounded-2xl bg-accent text-accent-foreground font-medium text-base hover:opacity-90 transition-all shadow-soft"
+                        disabled={placingOrder}
+                        className="w-full py-4 rounded-2xl bg-accent text-accent-foreground font-medium text-base hover:opacity-90 transition-all shadow-soft disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Place Order — PKR {total.toLocaleString()}
+                        {placingOrder ? "Placing Order..." : `Place Order — PKR ${total.toLocaleString()}`}
                       </button>
                     </form>
                   </motion.div>

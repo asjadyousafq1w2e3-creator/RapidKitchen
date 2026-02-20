@@ -9,9 +9,15 @@ import Footer from "@/components/Footer";
 
 const AccountPage = () => {
   const { user, isAdmin, signOut, loading: authLoading } = useAuth();
+  const [authTimeout, setAuthTimeout] = useState(false);
   const [orders, setOrders] = useState<any[]>([]);
   const [wishlists, setWishlists] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setAuthTimeout(true), 5000);
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -34,7 +40,7 @@ const AccountPage = () => {
     fetchData();
   };
 
-  if (authLoading) return <div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
+  if (authLoading && !authTimeout) return <div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
   if (!user) return <Navigate to="/auth" replace />;
 
   return (
