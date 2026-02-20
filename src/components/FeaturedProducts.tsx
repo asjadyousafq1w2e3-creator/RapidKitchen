@@ -14,26 +14,30 @@ const FeaturedProducts = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-12"
+        className="text-center mb-10 sm:mb-12"
       >
-        <span className="text-sm font-medium tracking-widest uppercase text-primary">
-          Our Collection
-        </span>
-        <h2 className="font-display text-4xl sm:text-5xl text-foreground mt-3">
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <div className="w-8 h-px bg-primary" />
+          <span className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-primary">
+            Our Collection
+          </span>
+          <div className="w-8 h-px bg-primary" />
+        </div>
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-foreground mt-2">
           Featured Products
         </h2>
-        <p className="text-muted-foreground mt-4 max-w-md mx-auto">
+        <p className="text-muted-foreground mt-3 sm:mt-4 max-w-md mx-auto text-sm sm:text-base">
           Handpicked kitchen essentials designed to make cooking effortless and enjoyable.
         </p>
       </motion.div>
 
       {/* Category Filter */}
-      <div className="flex flex-wrap justify-center gap-2 mb-10">
+      <div className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-10">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActive(cat)}
-            className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+            className={`px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
               active === cat
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground hover:bg-muted"
@@ -45,7 +49,7 @@ const FeaturedProducts = () => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         {filtered.map((product, i) => (
           <ProductCard key={product.id} product={product} index={i} />
         ))}
