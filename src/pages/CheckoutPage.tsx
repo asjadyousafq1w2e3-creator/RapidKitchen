@@ -110,51 +110,29 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     setPlacingOrder(true);
     try {
-      const orderData: Record<string, unknown> = {
-        total_price: total,
-        status: "pending",
-        shipping_address: shippingData as unknown as Record<string, unknown>,
-        payment_method: "cod",
-        notes: shippingData.notes || null,
-      };
-      if (user?.id) orderData.user_id = user.id;
+      const { data, error } = await supabase.functions.invoke("create-order", {
+        body: {
+          items: items.map((item) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+            color: item.color || null,
+          })),
+          shipping: shippingData,
+          couponCode: couponApplied ? coupon : null,
+        },
+      });
 
-      const { data: order, error } = await supabase
-        .from("orders")
-        .insert(orderData as any)
-        .select()
-        .single();
+      if (error || !data?.success) {
+        throw new Error(data?.error || "Failed to place order");
+      }
 
-      if (error) throw error;
-
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_name: item.product.name,
-        product_image: item.product.images[0],
-        quantity: item.quantity,
-        price: item.product.price,
-        color: item.color || null,
-      }));
-
-      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-      if (itemsError) throw itemsError;
-
-      setOrderId(order.id);
+      setOrderId(data.orderId);
       setOrderPlaced(true);
       clearCart();
       toast.success("Order placed successfully!");
-
-      // Send order confirmation emails (non-blocking)
-      try {
-        await supabase.functions.invoke("send-order-email", {
-          body: { orderId: order.id },
-        });
-      } catch (emailErr) {
-        console.error("Email notification failed:", emailErr);
-      }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Order failed:", err);
-      toast.error("Failed to place order. Please try again.");
+      toast.error(err?.message || "Failed to place order. Please try again.");
     }
     setPlacingOrder(false);
   };
