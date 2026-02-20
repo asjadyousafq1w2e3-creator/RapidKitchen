@@ -18,10 +18,10 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: index * 0.08, duration: 0.5 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ delay: Math.min(index * 0.05, 0.3), duration: 0.4 }}
       className="group relative bg-card rounded-2xl sm:rounded-3xl overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-500"
     >
       {/* Image */}
