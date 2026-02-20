@@ -23,10 +23,10 @@ const Footer = () => (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
         <div className="col-span-2 md:col-span-1">
           <Link to="/" className="font-display text-xl sm:text-2xl text-foreground">
-            Chef<span className="text-primary">Ease</span>
+            Rapid<span className="text-primary">Kitch</span>
           </Link>
           <p className="text-sm text-muted-foreground mt-3 max-w-xs">
-            Premium kitchen gadgets for the modern home. Upgrade your cooking experience.
+            Premium kitchen gadgets for the modern home. Shop smart, cook fast with RapidKitch.
           </p>
         </div>
         {Object.entries(footerLinks).map(([title, links]) => (
@@ -50,7 +50,7 @@ const Footer = () => (
 
       <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
         <p className="text-xs text-muted-foreground">
-          © 2026 ChefEase. All rights reserved.
+          © 2026 RapidKitch. All rights reserved.
         </p>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span>🇵🇰 Pakistan</span>

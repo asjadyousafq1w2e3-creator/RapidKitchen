@@ -42,7 +42,7 @@ const policies = [
     icon: CreditCard,
     title: "Terms of Service",
     content: [
-      "By using ChefEase, you agree to these terms.",
+      "By using RapidKitch, you agree to these terms.",
       "Prices are in PKR and may change without notice.",
       "Product images are for illustration; minor variations may occur.",
       "We reserve the right to cancel orders due to stock issues.",
@@ -63,7 +63,7 @@ const PoliciesPage = () => (
         >
           <h1 className="font-display text-4xl sm:text-5xl text-foreground mb-4">Policies</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Everything you need to know about shopping with ChefEase.
+            Everything you need to know about shopping with RapidKitch.
           </p>
         </motion.div>
 

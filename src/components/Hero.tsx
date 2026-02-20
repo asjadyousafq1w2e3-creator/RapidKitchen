@@ -37,7 +37,7 @@ const Hero = () => {
           >
             <div className="w-8 h-px bg-primary" />
             <span className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-primary">
-              Premium Kitchen Essentials
+              RapidKitch Premium Essentials
             </span>
           </motion.div>
 

@@ -11,7 +11,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const ChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "Hi! 👋 I'm ChefEase's AI assistant. How can I help you today?" },
+    { role: "assistant", content: "Hi! 👋 I'm RapidKitch's AI assistant. How can I help you today?" },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -130,7 +130,7 @@ const ChatWidget = () => {
                   <Bot className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">ChefEase AI</p>
+                  <p className="text-sm font-medium text-foreground">RapidKitch AI</p>
                   <p className="text-[10px] text-muted-foreground">Always here to help</p>
                 </div>
               </div>
