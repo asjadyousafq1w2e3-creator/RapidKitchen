@@ -79,7 +79,7 @@ const Navbar = () => {
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <Link to="/" className="flex items-center">
-              <img src={logoImg} alt="Rapid Kitchen" className="h-10 sm:h-12 w-auto object-contain" />
+              <img src={logoImg} alt="Rapid Kitchen" className="h-14 sm:h-16 w-auto object-contain" />
             </Link>
           </div>
 
@@ -243,7 +243,7 @@ const Navbar = () => {
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <Link to="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
-                  <img src={logoImg} alt="Rapid Kitchen" className="h-10 w-auto object-contain" />
+                  <img src={logoImg} alt="Rapid Kitchen" className="h-14 w-auto object-contain" />
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="p-2 rounded-full hover:bg-secondary transition-colors">
                   <X className="w-5 h-5" />
