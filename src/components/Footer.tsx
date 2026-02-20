@@ -1,18 +1,28 @@
 import { Link } from "react-router-dom";
 
 const footerLinks = {
-  Shop: ["All Products", "Best Sellers", "New Arrivals", "Sale"],
-  Support: ["Contact Us", "Shipping Info", "Returns", "FAQ"],
-  Company: ["About Us", "Blog", "Careers", "Press"],
-  Legal: ["Privacy Policy", "Terms of Service", "Refund Policy"],
+  Shop: [
+    { label: "All Products", to: "/shop" },
+    { label: "Best Sellers", to: "/shop" },
+    { label: "New Arrivals", to: "/shop" },
+  ],
+  Support: [
+    { label: "Contact Us", to: "/contact" },
+    { label: "FAQ", to: "/#faq" },
+    { label: "Shipping & Returns", to: "/policies" },
+  ],
+  Company: [
+    { label: "About Us", to: "/about" },
+    { label: "Policies", to: "/policies" },
+  ],
 };
 
 const Footer = () => (
   <footer className="bg-card border-t border-border">
     <div className="container-tight section-padding pb-8">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
         <div className="col-span-2 md:col-span-1">
-          <Link to="/" className="font-display text-2xl text-foreground">
+          <Link to="/" className="font-display text-xl sm:text-2xl text-foreground">
             Chef<span className="text-primary">Ease</span>
           </Link>
           <p className="text-sm text-muted-foreground mt-3 max-w-xs">
@@ -24,13 +34,13 @@ const Footer = () => (
             <h4 className="font-display text-sm text-foreground mb-4">{title}</h4>
             <ul className="space-y-2">
               {links.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
+                <li key={link.label}>
+                  <Link
+                    to={link.to}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {link}
-                  </a>
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>

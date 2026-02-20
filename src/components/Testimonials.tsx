@@ -8,17 +8,21 @@ const Testimonials = () => (
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-12"
+        className="text-center mb-10 sm:mb-12"
       >
-        <span className="text-sm font-medium tracking-widest uppercase text-primary">
-          Testimonials
-        </span>
-        <h2 className="font-display text-4xl sm:text-5xl text-foreground mt-3">
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <div className="w-8 h-px bg-primary" />
+          <span className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-primary">
+            Testimonials
+          </span>
+          <div className="w-8 h-px bg-primary" />
+        </div>
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-foreground">
           Loved by Thousands
         </h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {testimonials.map((t, i) => (
           <motion.div
             key={t.id}
@@ -26,18 +30,18 @@ const Testimonials = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
-            className="glass-card rounded-3xl p-6 shadow-soft"
+            className="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-soft"
           >
-            <div className="flex items-center gap-1 mb-4">
+            <div className="flex items-center gap-1 mb-3 sm:mb-4">
               {[...Array(5)].map((_, j) => (
-                <span key={j} className={j < t.rating ? "text-accent" : "text-muted"}>
+                <span key={j} className={`text-sm ${j < t.rating ? "text-accent" : "text-muted"}`}>
                   ★
                 </span>
               ))}
             </div>
-            <p className="text-foreground text-sm leading-relaxed mb-6">"{t.content}"</p>
+            <p className="text-foreground text-sm leading-relaxed mb-4 sm:mb-6">"{t.content}"</p>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs sm:text-sm">
                 {t.avatar}
               </div>
               <div>

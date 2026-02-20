@@ -206,7 +206,7 @@ const ProductPage = () => {
           {/* Related Products */}
           <div className="mt-20">
             <h2 className="font-display text-3xl text-foreground mb-8">You May Also Like</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {related.map((p, i) => (
                 <ProductCard key={p.id} product={p} index={i} />
               ))}
