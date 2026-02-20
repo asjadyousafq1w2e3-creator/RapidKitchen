@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { Product } from "@/data/products";
 
 export interface CartItem {
@@ -20,12 +20,36 @@ interface CartContextType {
   justAdded: string | null;
 }
 
+const CART_STORAGE_KEY = "chefease_cart";
+
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveCartToStorage = (items: CartItem[]) => {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // Storage full or unavailable
+  }
+};
+
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadCartFromStorage);
   const [isOpen, setIsOpen] = useState(false);
   const [justAdded, setJustAdded] = useState<string | null>(null);
+
+  // Persist cart to localStorage whenever items change
+  useEffect(() => {
+    saveCartToStorage(items);
+  }, [items]);
 
   const addItem = useCallback((product: Product, quantity = 1, color?: string) => {
     setItems((prev) => {
