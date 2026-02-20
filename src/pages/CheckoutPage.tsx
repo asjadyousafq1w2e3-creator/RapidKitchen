@@ -42,6 +42,9 @@ const CheckoutPage = () => {
   const [step, setStep] = useState<"cart" | "shipping" | "review">("cart");
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponLabel, setCouponLabel] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
   const [shippingData, setShippingData] = useState<ShippingForm>(INITIAL_SHIPPING);
   const [errors, setErrors] = useState<Partial<Record<keyof ShippingForm, string>>>({});
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -49,8 +52,35 @@ const CheckoutPage = () => {
   const [orderId, setOrderId] = useState("");
 
   const shipping = totalPrice >= FREE_SHIPPING ? 0 : 250;
-  const discount = couponApplied ? Math.round(totalPrice * 0.1) : 0;
+  const discount = couponApplied ? couponDiscount : 0;
   const total = totalPrice + shipping - discount;
+
+  const handleApplyCoupon = async () => {
+    if (!coupon.trim()) return;
+    setCouponLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("validate-coupon", {
+        body: { code: coupon, order_total: totalPrice },
+      });
+      if (error || !data?.valid) {
+        toast.error(data?.error || "Invalid coupon code");
+        setCouponApplied(false);
+        setCouponDiscount(0);
+      } else {
+        setCouponApplied(true);
+        setCouponDiscount(data.discount);
+        setCouponLabel(
+          data.discount_type === "percentage"
+            ? `${data.discount_value}% discount applied!`
+            : `PKR ${data.discount_value} discount applied!`
+        );
+        toast.success("Coupon applied!");
+      }
+    } catch {
+      toast.error("Failed to validate coupon");
+    }
+    setCouponLoading(false);
+  };
 
   const validateShipping = (): boolean => {
     const newErrors: Partial<Record<keyof ShippingForm, string>> = {};
@@ -292,13 +322,14 @@ const CheckoutPage = () => {
                             />
                           </div>
                           <button
-                            onClick={() => coupon && setCouponApplied(true)}
-                            className="px-5 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-muted transition-colors"
+                            onClick={handleApplyCoupon}
+                            disabled={couponLoading}
+                            className="px-5 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
                           >
-                            Apply
+                            {couponLoading ? "..." : "Apply"}
                           </button>
                         </div>
-                        {couponApplied && <p className="text-sm text-primary font-medium">✓ 10% discount applied!</p>}
+                        {couponApplied && <p className="text-sm text-primary font-medium">✓ {couponLabel}</p>}
 
                         <button
                           onClick={() => setStep("shipping")}
