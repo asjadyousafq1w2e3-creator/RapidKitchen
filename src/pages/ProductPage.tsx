@@ -5,6 +5,7 @@ import { Minus, Plus, ShoppingBag, ArrowLeft, Truck, RotateCcw, Shield, Check } 
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
+import ReviewSection from "@/components/ReviewSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mapProduct } from "./ShopPage";
@@ -194,6 +195,9 @@ const ProductPage = () => {
               </div>
             </motion.div>
           </div>
+
+          {/* Reviews Section */}
+          <ReviewSection productId={product.id} />
 
           {related.length > 0 && (
             <div className="mt-20">
