@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display&display=swap');
 
 @layer base {
   :root {
@@ -153,4 +153,21 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Performance: skip rendering off-screen sections */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* Reduce paint on animated elements */
+.shadow-soft, .shadow-elevated {
+  will-change: transform;
+}
+
+/* Optimize images */
+img {
+  image-rendering: auto;
+  -webkit-font-smoothing: antialiased;
 }

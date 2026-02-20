@@ -1,20 +1,9 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-import { mapProduct } from "@/pages/ShopPage";
+import { useBestSellers } from "@/hooks/use-products";
 import ProductCard from "./ProductCard";
 
 const BestSellers = () => {
-  const [products, setProducts] = useState<any[]>([]);
-
-  useEffect(() => {
-    supabase
-      .from("products")
-      .select("*")
-      .or("badge.eq.Best Seller,badge.eq.Top Rated")
-      .limit(6)
-      .then(({ data }) => setProducts((data || []).map(mapProduct)));
-  }, []);
+  const { data: products = [] } = useBestSellers();
 
   if (products.length === 0) return null;
 
@@ -28,7 +17,7 @@ const BestSellers = () => {
         </motion.div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-          {products.map((product, i) => (
+          {products.map((product: any, i: number) => (
             <ProductCard key={product.id} product={product} index={i} />
           ))}
         </div>
