@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Minus, Plus, X, Truck, Shield, CreditCard, ArrowRight, ChevronLeft, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -10,6 +12,7 @@ const FREE_SHIPPING = 3000;
 
 const CheckoutPage = () => {
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
+  const { user } = useAuth();
   const [step, setStep] = useState<"cart" | "shipping" | "payment">("cart");
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
@@ -19,14 +22,49 @@ const CheckoutPage = () => {
   });
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placingOrder, setPlacingOrder] = useState(false);
 
   const shipping = totalPrice >= FREE_SHIPPING ? 0 : 250;
   const discount = couponApplied ? Math.round(totalPrice * 0.1) : 0;
   const total = totalPrice + shipping - discount;
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOrderPlaced(true);
+    if (!user) {
+      window.location.href = "/auth";
+      return;
+    }
+    setPlacingOrder(true);
+    try {
+      const { data: order, error } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          total_price: total,
+          status: "pending",
+          shipping_address: shippingData,
+          payment_method: paymentMethod,
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+
+      const orderItems = items.map((item) => ({
+        order_id: order.id,
+        product_name: item.product.name,
+        product_image: item.product.images[0],
+        quantity: item.quantity,
+        price: item.product.price,
+        color: item.color,
+      }));
+
+      await supabase.from("order_items").insert(orderItems);
+      setOrderPlaced(true);
+    } catch (err) {
+      console.error("Order failed:", err);
+    }
+    setPlacingOrder(false);
   };
 
   if (orderPlaced) {

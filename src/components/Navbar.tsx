@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingBag, Menu, X, Search } from "lucide-react";
+import { ShoppingBag, Menu, X, Search, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { totalItems, setIsOpen, justAdded } = useCart();
+  const { user } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -42,7 +44,6 @@ const Navbar = () => {
           Chef<span className="text-primary">Ease</span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
@@ -60,10 +61,18 @@ const Navbar = () => {
           ))}
         </nav>
 
-        <div className="flex items-center gap-1 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button className="p-2 rounded-full hover:bg-secondary transition-colors">
             <Search className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
           </button>
+
+          <Link
+            to={user ? "/account" : "/auth"}
+            className="p-2 rounded-full hover:bg-secondary transition-colors"
+          >
+            <User className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+          </Link>
+
           <button
             onClick={() => setIsOpen(true)}
             className="relative p-2 rounded-full hover:bg-secondary transition-colors"
@@ -79,6 +88,7 @@ const Navbar = () => {
               </motion.span>
             )}
           </button>
+
           <button
             className="md:hidden p-2 rounded-full hover:bg-secondary transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -88,7 +98,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -111,6 +120,12 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                to={user ? "/account" : "/auth"}
+                className="text-base font-medium py-2.5 px-3 rounded-xl text-muted-foreground hover:bg-secondary transition-colors"
+              >
+                {user ? "My Account" : "Sign In"}
+              </Link>
             </nav>
           </motion.div>
         )}
