@@ -1,27 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-import { mapProduct } from "@/pages/ShopPage";
+import { useProducts, useCategories } from "@/hooks/use-products";
 import ProductCard from "./ProductCard";
 
 const FeaturedProducts = () => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<string[]>(["All"]);
+  const { data: products = [] } = useProducts(12);
+  const { data: categories = ["All"] } = useCategories();
   const [active, setActive] = useState("All");
 
-  useEffect(() => {
-    const fetch = async () => {
-      const [{ data: prods }, { data: cats }] = await Promise.all([
-        supabase.from("products").select("*").order("created_at", { ascending: false }).limit(12),
-        supabase.from("categories").select("name").order("sort_order"),
-      ]);
-      setProducts((prods || []).map(mapProduct));
-      setCategories(["All", ...(cats || []).map((c: any) => c.name)]);
-    };
-    fetch();
-  }, []);
-
-  const filtered = active === "All" ? products : products.filter((p) => p.category === active);
+  const filtered = active === "All" ? products : products.filter((p: any) => p.category === active);
 
   return (
     <section id="featured" className="section-padding container-tight">
@@ -38,7 +25,7 @@ const FeaturedProducts = () => {
       </motion.div>
 
       <div className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-10">
-        {categories.map((cat) => (
+        {categories.map((cat: string) => (
           <button
             key={cat}
             onClick={() => setActive(cat)}
@@ -52,7 +39,7 @@ const FeaturedProducts = () => {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-        {filtered.map((product, i) => (
+        {filtered.map((product: any, i: number) => (
           <ProductCard key={product.id} product={product} index={i} />
         ))}
       </div>

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { ShoppingBag, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -9,7 +10,7 @@ interface ProductCardProps {
   index?: number;
 }
 
-const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
+const ProductCard = memo(({ product, index = 0 }: ProductCardProps) => {
   const { addItem } = useCart();
 
   const discount = product.originalPrice
@@ -31,6 +32,9 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
+          decoding="async"
+          width={400}
+          height={400}
         />
 
         {/* Badges */}
@@ -107,6 +111,8 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       </div>
     </motion.div>
   );
-};
+});
+
+ProductCard.displayName = "ProductCard";
 
 export default ProductCard;
