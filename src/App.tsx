@@ -15,7 +15,13 @@ import CheckoutPage from "./pages/CheckoutPage";
 import PoliciesPage from "./pages/PoliciesPage";
 import AuthPage from "./pages/AuthPage";
 import AccountPage from "./pages/AccountPage";
-import AdminPage from "./pages/AdminPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminCategories from "./pages/admin/AdminCategories";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminCoupons from "./pages/admin/AdminCoupons";
+import AdminSettings from "./pages/admin/AdminSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,7 +45,13 @@ const App = () => (
               <Route path="/policies" element={<PoliciesPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/account" element={<AccountPage />} />
-              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/categories" element={<AdminCategories />} />
+              <Route path="/admin/orders" element={<AdminOrders />} />
+              <Route path="/admin/customers" element={<AdminCustomers />} />
+              <Route path="/admin/coupons" element={<AdminCoupons />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </CartProvider>
