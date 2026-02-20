@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -22,8 +22,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let isMounted = true;
+    let adminCheckInFlight = false;
 
     const checkAdminRole = async (userId: string) => {
+      // Prevent concurrent admin checks from racing
+      if (adminCheckInFlight) return;
+      adminCheckInFlight = true;
       try {
         const { data } = await supabase
           .from("user_roles")
@@ -33,27 +37,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .maybeSingle();
         if (isMounted) setIsAdmin(!!data);
       } catch {
-        if (isMounted) setIsAdmin(false);
+        // On error, keep existing isAdmin value instead of resetting
+      } finally {
+        adminCheckInFlight = false;
       }
     };
 
-    // Listener for ONGOING auth changes (does NOT control loading)
+    // Listener for ONGOING auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         if (!isMounted) return;
         setSession(session);
         setUser(session?.user ?? null);
 
-        if (session?.user) {
-          // Use setTimeout to avoid Supabase auth deadlock
-          setTimeout(() => checkAdminRole(session.user.id), 0);
-        } else {
+        if (event === 'SIGNED_OUT') {
+          // Only reset admin on explicit sign out
           setIsAdmin(false);
+        } else if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+          // Only re-check admin on actual sign-in, not token refreshes
+          setTimeout(() => checkAdminRole(session.user.id), 0);
         }
       }
     );
 
-    // INITIAL load — only this controls loading state
+    // INITIAL load
     const initializeAuth = async () => {
       const safetyTimeout = setTimeout(() => {
         if (isMounted) setLoading(false);
