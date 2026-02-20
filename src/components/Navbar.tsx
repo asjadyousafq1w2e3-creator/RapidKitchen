@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import logoImg from "@/assets/logo.png";
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   Choppers: ChefHat,
@@ -77,8 +78,8 @@ const Navbar = () => {
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <Link to="/" className="font-display text-xl sm:text-2xl tracking-tight text-foreground">
-            Rapid<span className="text-primary">Kitch</span>
+            <Link to="/" className="flex items-center">
+              <img src={logoImg} alt="RapidKitch" className="h-8 sm:h-10 w-auto" />
             </Link>
           </div>
 
@@ -241,8 +242,8 @@ const Navbar = () => {
             >
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
-                <Link to="/" className="font-display text-xl tracking-tight text-foreground" onClick={() => setMobileOpen(false)}>
-                  Rapid<span className="text-primary">Kitch</span>
+                <Link to="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
+                  <img src={logoImg} alt="RapidKitch" className="h-8 w-auto" />
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="p-2 rounded-full hover:bg-secondary transition-colors">
                   <X className="w-5 h-5" />
