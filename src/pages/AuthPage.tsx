@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const AuthPage = () => {
-  const { user, signIn, signUp } = useAuth();
+  const { user, isAdmin, signIn, signUp } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +16,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
 
+  if (user && isAdmin) return <Navigate to="/admin" replace />;
   if (user) return <Navigate to="/account" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {

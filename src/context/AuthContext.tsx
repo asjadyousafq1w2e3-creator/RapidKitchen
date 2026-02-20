@@ -22,12 +22,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let isMounted = true;
-    let adminCheckInFlight = false;
+    let initialLoadDone = false;
 
     const checkAdminRole = async (userId: string) => {
-      // Prevent concurrent admin checks from racing
-      if (adminCheckInFlight) return;
-      adminCheckInFlight = true;
       try {
         const { data } = await supabase
           .from("user_roles")
@@ -37,50 +34,63 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .maybeSingle();
         if (isMounted) setIsAdmin(!!data);
       } catch {
-        // On error, keep existing isAdmin value instead of resetting
-      } finally {
-        adminCheckInFlight = false;
+        // On error, keep existing isAdmin value
       }
     };
 
-    // Listener for ONGOING auth changes
+    // Listener for ONGOING auth changes — does NOT control loading
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (event, newSession) => {
         if (!isMounted) return;
-        setSession(session);
-        setUser(session?.user ?? null);
 
         if (event === 'SIGNED_OUT') {
-          // Only reset admin on explicit sign out
+          setSession(null);
+          setUser(null);
           setIsAdmin(false);
-        } else if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+          return;
+        }
+
+        // Only update state if we actually have a valid session
+        // This prevents clearing state on failed token refreshes (429s)
+        if (newSession?.user) {
+          setSession(newSession);
+          setUser(newSession.user);
+
           // Only re-check admin on actual sign-in, not token refreshes
-          setTimeout(() => checkAdminRole(session.user.id), 0);
+          if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+            setTimeout(() => checkAdminRole(newSession.user.id), 0);
+          }
         }
       }
     );
 
-    // INITIAL load
+    // INITIAL load — controls loading state
     const initializeAuth = async () => {
       const safetyTimeout = setTimeout(() => {
-        if (isMounted) setLoading(false);
+        if (isMounted && !initialLoadDone) {
+          initialLoadDone = true;
+          setLoading(false);
+        }
       }, 5000);
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
         if (!isMounted) return;
 
-        setSession(session);
-        setUser(session?.user ?? null);
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
 
-        if (session?.user) {
-          await checkAdminRole(session.user.id);
+        if (initialSession?.user) {
+          await checkAdminRole(initialSession.user.id);
         }
       } catch (error) {
         console.error("Auth init error:", error);
       } finally {
         clearTimeout(safetyTimeout);
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          initialLoadDone = true;
+          setLoading(false);
+        }
       }
     };
 
