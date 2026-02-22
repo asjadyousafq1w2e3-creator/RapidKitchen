@@ -9,15 +9,9 @@ import Footer from "@/components/Footer";
 
 const AccountPage = () => {
   const { user, isAdmin, signOut, loading: authLoading } = useAuth();
-  const [authTimeout, setAuthTimeout] = useState(false);
   const [orders, setOrders] = useState<any[]>([]);
   const [wishlists, setWishlists] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => setAuthTimeout(true), 5000);
-    return () => clearTimeout(timeout);
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -40,8 +34,14 @@ const AccountPage = () => {
     fetchData();
   };
 
-  if (authLoading && !authTimeout) return <div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>;
+  // Wait for auth to finish loading before deciding to redirect
+  if (authLoading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
   if (!user) return <Navigate to="/auth" replace />;
+
 
   return (
     <>
@@ -91,11 +91,10 @@ const AccountPage = () => {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold text-foreground">PKR {order.total_price?.toLocaleString()}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          order.status === "delivered" ? "bg-primary/10 text-primary" :
-                          order.status === "shipped" ? "bg-accent/10 text-accent" :
-                          "bg-secondary text-secondary-foreground"
-                        }`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${order.status === "delivered" ? "bg-primary/10 text-primary" :
+                            order.status === "shipped" ? "bg-accent/10 text-accent" :
+                              "bg-secondary text-secondary-foreground"
+                          }`}>
                           {order.status}
                         </span>
                       </div>
