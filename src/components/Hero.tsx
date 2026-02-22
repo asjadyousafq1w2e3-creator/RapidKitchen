@@ -77,7 +77,7 @@ const Hero = () => {
   return (
     <section
       ref={ref}
-      className="relative min-h-[92vh] sm:min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

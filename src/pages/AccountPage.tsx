@@ -46,7 +46,7 @@ const AccountPage = () => {
   return (
     <>
       <Navbar />
-      <main className="pt-24 pb-16">
+      <main className="pt-12 pb-16">
         <div className="container-tight px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             <div>
@@ -92,8 +92,8 @@ const AccountPage = () => {
                       <div className="text-right">
                         <p className="text-sm font-bold text-foreground">PKR {order.total_price?.toLocaleString()}</p>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${order.status === "delivered" ? "bg-primary/10 text-primary" :
-                            order.status === "shipped" ? "bg-accent/10 text-accent" :
-                              "bg-secondary text-secondary-foreground"
+                          order.status === "shipped" ? "bg-accent/10 text-accent" :
+                            "bg-secondary text-secondary-foreground"
                           }`}>
                           {order.status}
                         </span>

@@ -64,11 +64,10 @@ const Navbar = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "glass-card shadow-soft py-3"
-            : "bg-background/80 backdrop-blur-md py-4 sm:py-5"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+          ? "glass-card shadow-soft py-2"
+          : "bg-background/80 backdrop-blur-md py-2 sm:py-3"
+          }`}
       >
         <div className="container-tight flex items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
@@ -79,21 +78,19 @@ const Navbar = () => {
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <Link to="/" className="flex items-center">
-              <img src={logoImg} alt="Rapid Kitchen" className="h-20 sm:h-24 w-auto object-contain" />
+              <img src={logoImg} alt="Rapid Kitchen" className="h-10 sm:h-12 w-auto object-contain" />
             </Link>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
             <Link
               to="/shop"
-              className={`text-sm font-medium transition-colors relative group ${
-                location.pathname === "/shop" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors relative group ${location.pathname === "/shop" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               Shop
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                location.pathname === "/shop" ? "w-full" : "w-0 group-hover:w-full"
-              }`} />
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${location.pathname === "/shop" ? "w-full" : "w-0 group-hover:w-full"
+                }`} />
             </Link>
 
             {/* Categories Dropdown */}
@@ -103,15 +100,13 @@ const Navbar = () => {
               onMouseLeave={() => setCategoriesOpen(false)}
             >
               <button
-                className={`flex items-center gap-1 text-sm font-medium transition-colors relative group ${
-                  location.pathname.startsWith("/category") ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`flex items-center gap-1 text-sm font-medium transition-colors relative group ${location.pathname.startsWith("/category") ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 Categories
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${categoriesOpen ? "rotate-180" : ""}`} />
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                  location.pathname.startsWith("/category") ? "w-full" : "w-0 group-hover:w-full"
-                }`} />
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${location.pathname.startsWith("/category") ? "w-full" : "w-0 group-hover:w-full"
+                  }`} />
               </button>
 
               <AnimatePresence>
@@ -132,15 +127,13 @@ const Navbar = () => {
                             key={cat.slug}
                             to={`/category/${cat.slug}`}
                             onClick={() => setCategoriesOpen(false)}
-                            className={`flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm transition-colors ${
-                              isActive
-                                ? "bg-primary/10 text-primary font-medium"
-                                : "text-foreground hover:bg-secondary"
-                            }`}
+                            className={`flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm transition-colors ${isActive
+                              ? "bg-primary/10 text-primary font-medium"
+                              : "text-foreground hover:bg-secondary"
+                              }`}
                           >
-                            <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                              isActive ? "bg-primary/20" : "bg-secondary"
-                            }`}>
+                            <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isActive ? "bg-primary/20" : "bg-secondary"
+                              }`}>
                               <Icon className="w-4 h-4" />
                             </span>
                             {cat.name}
@@ -165,26 +158,22 @@ const Navbar = () => {
 
             <Link
               to="/about"
-              className={`text-sm font-medium transition-colors relative group ${
-                location.pathname === "/about" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors relative group ${location.pathname === "/about" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               About
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                location.pathname === "/about" ? "w-full" : "w-0 group-hover:w-full"
-              }`} />
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${location.pathname === "/about" ? "w-full" : "w-0 group-hover:w-full"
+                }`} />
             </Link>
 
             <Link
               to="/contact"
-              className={`text-sm font-medium transition-colors relative group ${
-                location.pathname === "/contact" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors relative group ${location.pathname === "/contact" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               Contact
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                location.pathname === "/contact" ? "w-full" : "w-0 group-hover:w-full"
-              }`} />
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${location.pathname === "/contact" ? "w-full" : "w-0 group-hover:w-full"
+                }`} />
             </Link>
           </nav>
 
@@ -257,11 +246,10 @@ const Navbar = () => {
                     key={link.label}
                     to={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center justify-between py-3 px-3 rounded-xl text-sm font-medium transition-colors ${
-                      location.pathname === link.href
-                        ? "bg-primary/10 text-primary"
-                        : "text-foreground hover:bg-secondary"
-                    }`}
+                    className={`flex items-center justify-between py-3 px-3 rounded-xl text-sm font-medium transition-colors ${location.pathname === link.href
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-secondary"
+                      }`}
                   >
                     {link.label}
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -284,15 +272,13 @@ const Navbar = () => {
                         key={cat.slug}
                         to={`/category/${cat.slug}`}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm transition-colors ${
-                          isActive
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "text-foreground hover:bg-secondary"
-                        }`}
+                        className={`flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm transition-colors ${isActive
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-foreground hover:bg-secondary"
+                          }`}
                       >
-                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                          isActive ? "bg-primary/20" : "bg-secondary"
-                        }`}>
+                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${isActive ? "bg-primary/20" : "bg-secondary"
+                          }`}>
                           <Icon className="w-4 h-4" />
                         </span>
                         <span className="flex-1">{cat.name}</span>
