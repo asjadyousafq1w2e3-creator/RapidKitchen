@@ -130,7 +130,7 @@ const AuthPage = () => {
                 onClick={async () => {
                   setError("");
                   const { error } = await oauthClient.auth.signInWithOAuth("google", {
-                    redirect_uri: window.location.origin,
+                    redirect_uri: `${window.location.origin}/auth/callback`,
                   });
                   if (error) setError(error.message);
                 }}

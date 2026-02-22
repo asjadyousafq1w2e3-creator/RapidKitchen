@@ -8,6 +8,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import CartDrawer from "@/components/CartDrawer";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
+import AdminGuard from "@/components/AdminGuard";
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 
 // Eagerly load the homepage for instant first paint
 import Index from "./pages/Index";
@@ -73,14 +75,15 @@ const App = () => (
                 <Route path="/category/:slug" element={<CategoryPage />} />
                 <Route path="/policies" element={<PoliciesPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/account" element={<AccountPage />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/products" element={<AdminProducts />} />
-                <Route path="/admin/categories" element={<AdminCategories />} />
-                <Route path="/admin/orders" element={<AdminOrders />} />
-                <Route path="/admin/customers" element={<AdminCustomers />} />
-                <Route path="/admin/coupons" element={<AdminCoupons />} />
-                <Route path="/admin/settings" element={<AdminSettings />} />
+                <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                <Route path="/admin/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
+                <Route path="/admin/categories" element={<AdminGuard><AdminCategories /></AdminGuard>} />
+                <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                <Route path="/admin/customers" element={<AdminGuard><AdminCustomers /></AdminGuard>} />
+                <Route path="/admin/coupons" element={<AdminGuard><AdminCoupons /></AdminGuard>} />
+                <Route path="/admin/settings" element={<AdminGuard><AdminSettings /></AdminGuard>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
