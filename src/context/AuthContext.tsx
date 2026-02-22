@@ -41,10 +41,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listener for ONGOING auth changes — does NOT control loading
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
-        console.log('[Auth] Event:', event, '| User:', newSession?.user?.email ?? 'none');
+        console.log('[Auth] Event:', event);
         if (!isMounted) return;
 
         if (event === 'SIGNED_OUT') {
+          console.log('[Auth] Cleaning up state after SIGNED_OUT');
           setSession(null);
           setUser(null);
           setIsAdmin(false);
@@ -52,11 +53,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         if (newSession?.user) {
-          setSession(newSession);
-          setUser(newSession.user);
+          // Use functional updates to avoid unnecessary state triggers if session hasn't changed
+          setSession(prev => prev?.access_token === newSession.access_token ? prev : newSession);
+          setUser(prev => prev?.id === newSession.user.id ? prev : newSession.user);
 
-          if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-            setTimeout(() => checkAdminRole(newSession.user.id), 0);
+          // Only check admin role on key events to avoid loops
+          if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED') {
+            checkAdminRole(newSession.user.id);
           }
         }
       }
