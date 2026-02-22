@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listener for ONGOING auth changes — does NOT control loading
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
+        console.log('[Auth] Event:', event, '| User:', newSession?.user?.email ?? 'none');
         if (!isMounted) return;
 
         if (event === 'SIGNED_OUT') {
@@ -50,13 +51,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           return;
         }
 
-        // Only update state if we actually have a valid session
-        // This prevents clearing state on failed token refreshes (429s)
         if (newSession?.user) {
           setSession(newSession);
           setUser(newSession.user);
 
-          // Only re-check admin on actual sign-in, not token refreshes
           if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
             setTimeout(() => checkAdminRole(newSession.user.id), 0);
           }
