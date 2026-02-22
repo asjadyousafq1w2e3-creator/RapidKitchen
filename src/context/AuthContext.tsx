@@ -19,12 +19,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     let initialLoadDone = false;
 
     const checkAdminRole = async (userId: string) => {
+      if (isCheckingAdmin) return;
+      setIsCheckingAdmin(true);
       try {
         const { data } = await supabase
           .from("user_roles")
@@ -35,6 +38,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (isMounted) setIsAdmin(!!data);
       } catch {
         // On error, keep existing isAdmin value
+      } finally {
+        if (isMounted) setIsCheckingAdmin(false);
       }
     };
 
@@ -67,6 +72,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // INITIAL load — controls loading state
     const initializeAuth = async () => {
+      // CRITICAL: If the URL hash is stale (e.g. from an old tab), it can break the session.
+      // If we see a hash that isn't specifically for the AuthCallback page, we clear it.
+      if (window.location.hash && !window.location.pathname.includes('/auth/callback')) {
+        console.log('[Auth] Clearing potentially stale URL hash');
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+
       const safetyTimeout = setTimeout(() => {
         if (isMounted && !initialLoadDone) {
           initialLoadDone = true;
