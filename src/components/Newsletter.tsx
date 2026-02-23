@@ -28,8 +28,9 @@ const Newsletter = () => {
           <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-primary-foreground/5" />
 
           <div className="relative z-10">
+            <span className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-primary-foreground/80">RapidKitchen Insider</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-primary-foreground mb-3 sm:mb-4">
-              Join the RapidKitch Family
+              Join the RapidKitchen Family
             </h2>
             <p className="text-primary-foreground/70 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
               Get exclusive deals, new arrivals, and kitchen tips delivered to your inbox.

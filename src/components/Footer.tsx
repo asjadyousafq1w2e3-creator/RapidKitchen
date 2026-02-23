@@ -22,11 +22,12 @@ const Footer = () => (
     <div className="container-tight section-padding pb-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
         <div className="col-span-2 md:col-span-1">
-          <Link to="/" className="font-display text-xl sm:text-2xl text-foreground">
-            Rapid<span className="text-primary">Kitch</span>
+          <Link to="/">
+            <span className="font-display text-2xl font-bold tracking-tight text-primary">RapidKitchen<span className="text-foreground">.</span></span>
           </Link>
-          <p className="text-sm text-muted-foreground mt-3 max-w-xs">
-            Premium kitchen gadgets for the modern home. Shop smart, cook fast with RapidKitch.
+          <p className="text-muted-foreground mt-6 max-w-sm leading-relaxed text-sm">
+            Elevating your culinary experience with smart, premium tools designed for the modern Pakistani kitchen.
+            Quality you can trust, prices you'll love.
           </p>
         </div>
         {Object.entries(footerLinks).map(([title, links]) => (
@@ -50,7 +51,7 @@ const Footer = () => (
 
       <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
         <p className="text-xs text-muted-foreground">
-          © 2026 RapidKitch. All rights reserved.
+          <p>&copy; {new Date().getFullYear()} RapidKitchen. All rights reserved.</p>
         </p>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span>🇵🇰 Pakistan</span>

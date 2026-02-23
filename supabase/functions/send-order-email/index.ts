@@ -237,7 +237,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: `${STORE_NAME} <onboarding@resend.dev>`,
         to: [shipping.email],
-        subject: `Order Confirmed! #${orderId.slice(0, 8).toUpperCase()} — ${STORE_NAME}`,
+        subject: `Order Confirmation - RapidKitchen #${orderId.slice(0, 8).toUpperCase()}`,
         html: generateCustomerEmail(orderId, order.total_price, shipping, orderItems),
       }),
     });

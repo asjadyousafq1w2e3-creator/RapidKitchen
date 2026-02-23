@@ -1,4 +1,4 @@
-# RapidKitch — Premium Kitchen Gadgets
+# RapidKitchen Premium Store 🍳
 
 **URL**: https://rapidkitch.vercel.app
 

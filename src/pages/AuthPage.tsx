@@ -53,11 +53,9 @@ const AuthPage = () => {
             className="max-w-md mx-auto"
           >
             <div className="text-center mb-8">
-              <h1 className="font-display text-3xl text-foreground mb-2">
-                {isLogin ? "Welcome Back" : "Create Account"}
-              </h1>
+              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-3">Welcome to RapidKitchen</h1>
               <p className="text-sm text-muted-foreground">
-                {isLogin ? "Sign in to your RapidKitch account" : "Join the RapidKitch family"}
+                {isLogin ? "Sign in to your RapidKitchen account" : "Join the RapidKitchen family"}
               </p>
             </div>
 

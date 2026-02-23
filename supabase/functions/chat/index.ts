@@ -51,7 +51,7 @@ ${productCatalog}
 6. Use PKR for all prices
 
 ## STORE POLICIES:
-- Store: RapidKitch — Premium Kitchen Gadgets Pakistan
+- Store: RapidKitchen — Premium Kitchen Gadgets Pakistan
 - Website: rapidkitch.com
 - Free shipping above PKR 3,000
 - Standard delivery: 3-5 business days

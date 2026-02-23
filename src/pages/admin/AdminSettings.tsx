@@ -5,8 +5,8 @@ import { Save, Settings, Store, Truck, CreditCard, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 const defaultSettings: Record<string, string> = {
-  store_name: "RapidKitch",
-  store_email: "support@rapidkitch.com",
+  store_name: "RapidKitchen",
+  store_email: "hello@rapidkitchen.pk",
   store_phone: "+92 300 1234567",
   store_address: "Lahore, Pakistan",
   currency: "PKR",

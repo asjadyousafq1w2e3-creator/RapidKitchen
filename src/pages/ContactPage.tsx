@@ -32,9 +32,12 @@ const ContactPage = () => {
               <span className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-primary">Get in Touch</span>
               <div className="w-8 h-px bg-primary" />
             </div>
-            <h1 className="font-display text-4xl sm:text-5xl text-foreground mb-4">Contact Us</h1>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              Have questions about an order or product? We'd love to hear from you.
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground mb-6">
+              Get in <span className="text-primary">Touch</span>
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Have a question about our products, your order, or just want to say hello?
+              We're here to help. Reach out to the RapidKitchen team.
             </p>
           </motion.div>
         </section>

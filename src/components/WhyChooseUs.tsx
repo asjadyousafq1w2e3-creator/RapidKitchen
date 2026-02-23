@@ -35,7 +35,7 @@ const WhyChooseUs = () => (
       <div className="flex items-center justify-center gap-3 mb-3">
         <div className="w-8 h-px bg-primary" />
         <span className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-primary">
-          Why RapidKitch
+          Why RapidKitchen
         </span>
         <div className="w-8 h-px bg-primary" />
       </div>
