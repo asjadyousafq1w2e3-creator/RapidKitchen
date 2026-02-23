@@ -123,7 +123,7 @@ const CheckoutPage = () => {
       });
 
       if (error || !data?.success) {
-        throw new Error(data?.error || "Failed to place order");
+        throw new Error(data?.error || error?.message || "Failed to place order. Edge function might not be running.");
       }
 
       setOrderId(data.orderId);
@@ -132,7 +132,9 @@ const CheckoutPage = () => {
       toast.success("Order placed successfully!");
     } catch (err: any) {
       console.error("Order failed:", err);
-      toast.error(err?.message || "Failed to place order. Please try again.");
+      const errorMessage = err?.message || "Failed to place order. Please try again.";
+      toast.error(errorMessage);
+      alert("Order Error: " + errorMessage); // Fallback alert ensures visibility
     }
     setPlacingOrder(false);
   };

@@ -6,8 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const FREE_SHIPPING = 3000;
-const SHIPPING_COST = 250;
+const FREE_SHIPPING = 3500;
+const SHIPPING_COST = 150;
 
 // Sanitize string: trim, limit length, strip HTML tags
 function sanitize(val: unknown, maxLen = 200): string {
