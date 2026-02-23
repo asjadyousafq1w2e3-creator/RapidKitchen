@@ -10,12 +10,12 @@ const defaultSettings: Record<string, string> = {
   store_phone: "+92 300 1234567",
   store_address: "Lahore, Pakistan",
   currency: "PKR",
-  free_shipping_threshold: "3000",
+  free_shipping_threshold: "3500",
   shipping_fee: "250",
   tax_rate: "0",
   order_notification_email: "",
   meta_title: "RapidKitch - Premium Kitchen Gadgets Pakistan",
-  meta_description: "Shop premium kitchen gadgets and accessories at RapidKitch. Free shipping above PKR 3,000.",
+  meta_description: "Shop premium kitchen gadgets and accessories at RapidKitch. Free shipping above PKR 3,500.",
 };
 
 const AdminSettings = () => {
@@ -76,9 +76,8 @@ const AdminSettings = () => {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                tab === t.id ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${tab === t.id ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
+                }`}
             >
               <t.icon className="w-4 h-4" /> {t.label}
             </button>

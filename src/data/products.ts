@@ -175,7 +175,7 @@ export const testimonials = [
 export const faqs = [
   {
     question: "What is your shipping policy?",
-    answer: "We offer free shipping on all orders above PKR 3,000. Standard delivery takes 3-5 business days across Pakistan. Express delivery is available for PKR 300 with 1-2 day delivery.",
+    answer: "We offer free shipping on all orders above PKR 3,500. Standard delivery takes 3-5 business days across Pakistan. Express delivery is available for PKR 300 with 1-2 day delivery.",
   },
   {
     question: "Do you offer Cash on Delivery?",

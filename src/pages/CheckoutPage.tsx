@@ -9,7 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
 
-const FREE_SHIPPING = 3000;
+const FREE_SHIPPING = 3500;
 
 interface ShippingForm {
   firstName: string;
@@ -51,7 +51,7 @@ const CheckoutPage = () => {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderId, setOrderId] = useState("");
 
-  const shipping = totalPrice >= FREE_SHIPPING ? 0 : 250;
+  const shipping = totalPrice >= FREE_SHIPPING ? 0 : 150;
   const discount = couponApplied ? couponDiscount : 0;
   const total = totalPrice + shipping - discount;
 
@@ -537,9 +537,8 @@ const FieldInput = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full ${icon ? "pl-10" : "px-4"} pr-4 py-3 rounded-xl bg-background border text-sm outline-none transition-colors ${
-          error ? "border-destructive" : "border-border focus:border-primary"
-        } text-foreground placeholder:text-muted-foreground`}
+        className={`w-full ${icon ? "pl-10" : "px-4"} pr-4 py-3 rounded-xl bg-background border text-sm outline-none transition-colors ${error ? "border-destructive" : "border-border focus:border-primary"
+          } text-foreground placeholder:text-muted-foreground`}
       />
     </div>
     {error && <p className="text-xs text-destructive mt-1">{error}</p>}

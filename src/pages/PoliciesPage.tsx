@@ -9,7 +9,7 @@ const policies = [
     icon: Truck,
     title: "Shipping Policy",
     content: [
-      "Free standard shipping on all orders above PKR 3,000.",
+      "Free standard shipping on all orders above PKR 3,500.",
       "Standard delivery: 3-5 business days across Pakistan.",
       "Express delivery: 1-2 business days for PKR 300.",
       "Orders are processed within 24 hours on business days.",

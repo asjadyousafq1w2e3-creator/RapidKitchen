@@ -210,7 +210,7 @@ const ProductPage = () => {
 
               <div className="space-y-3 pt-4 border-t border-border">
                 {[
-                  { icon: Truck, text: "Free shipping on orders above PKR 3,000" },
+                  { icon: Truck, text: "Free shipping on orders above PKR 3,500" },
                   { icon: RotateCcw, text: "30-day hassle-free returns" },
                   { icon: Shield, text: "1-year manufacturer warranty" },
                 ].map((item, i) => (

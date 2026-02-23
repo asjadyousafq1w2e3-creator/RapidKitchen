@@ -3,7 +3,7 @@ import { X, Minus, Plus, ShoppingBag, Truck, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 
-const FREE_SHIPPING_THRESHOLD = 3000;
+const FREE_SHIPPING_THRESHOLD = 3500;
 
 const CartDrawer = () => {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, totalItems } = useCart();

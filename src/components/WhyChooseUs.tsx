@@ -5,7 +5,7 @@ const features = [
   {
     icon: Truck,
     title: "Fast Shipping",
-    description: "Free delivery on orders above PKR 3,000. Express 1-2 day option available.",
+    description: "Free delivery on orders above PKR 3,500. Express 1-2 day option available.",
   },
   {
     icon: CreditCard,
