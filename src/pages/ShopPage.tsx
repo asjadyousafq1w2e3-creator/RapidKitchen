@@ -49,9 +49,8 @@ const ShopPage = () => {
                 <button
                   key={cat}
                   onClick={() => setActive(cat)}
-                  className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                    active === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all ${active === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
+                    }`}
                 >
                   {cat}
                 </button>
@@ -115,6 +114,9 @@ export const mapProduct = (p: any) => ({
   colors: p.colors,
   inStock: p.in_stock,
   features: p.features || [],
+  metaTitle: p.meta_title,
+  metaDescription: p.meta_description,
+  metaKeywords: p.meta_keywords,
 });
 
 export default ShopPage;

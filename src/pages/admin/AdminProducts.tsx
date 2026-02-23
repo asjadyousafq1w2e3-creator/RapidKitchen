@@ -15,6 +15,7 @@ const emptyProduct = {
   short_description: "", images: [] as string[], category: "General",
   features: [] as string[], in_stock: true, stock_quantity: 100,
   badge: "", colors: null as string[] | null, rating: 0, review_count: 0,
+  meta_title: "", meta_description: "", meta_keywords: "",
 };
 
 const AdminProducts = () => {
@@ -78,6 +79,9 @@ const AdminProducts = () => {
       colors,
       rating: Number(product.rating) || 0,
       review_count: Number(product.review_count) || 0,
+      meta_title: product.meta_title || null,
+      meta_description: product.meta_description || null,
+      meta_keywords: product.meta_keywords || null,
     };
 
     if (product.id) {
@@ -358,10 +362,26 @@ const ProductForm = ({
         />
       </div>
 
+      <div className="border-t border-border pt-5 mt-5 space-y-4">
+        <h4 className="font-display text-lg text-foreground">SEO Meta Data</h4>
+        <FormField label="Meta Title" value={form.meta_title || ""} onChange={(v) => set("meta_title", v)} placeholder="Leave blank to use product name" />
+        <div>
+          <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-1.5">Meta Description</label>
+          <textarea
+            value={form.meta_description || ""}
+            onChange={(e) => set("meta_description", e.target.value)}
+            rows={3}
+            placeholder="Leave blank to use short description"
+            className="w-full px-3 py-2.5 rounded-xl bg-background border border-border text-foreground text-sm outline-none focus:border-primary resize-none"
+          />
+        </div>
+        <FormField label="Meta Keywords (comma-separated)" value={form.meta_keywords || ""} onChange={(v) => set("meta_keywords", v)} placeholder="Leave blank to auto-generate" />
+      </div>
+
       {/* Image Upload Section */}
       <div>
         <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Product Images</label>
-        
+
         {/* Current Images Preview */}
         {currentImages.length > 0 && (
           <div className="flex flex-wrap gap-3 mb-3">

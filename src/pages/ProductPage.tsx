@@ -49,6 +49,32 @@ const ProductPage = () => {
     setQuantity(1);
   }, [id]);
 
+  useEffect(() => {
+    if (product) {
+      const title = product.metaTitle || product.name;
+      const description = product.metaDescription || product.shortDescription || product.description?.substring(0, 160) || "";
+      const keywords = product.metaKeywords || `${product.name}, ${product.category}, buy ${product.name}, buy online`;
+
+      document.title = title;
+
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', description);
+
+      let metaKeywords = document.querySelector('meta[name="keywords"]');
+      if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+      }
+      metaKeywords.setAttribute('content', keywords);
+    }
+  }, [product]);
+
   if (loading) {
     return (
       <>
