@@ -6,8 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const ADMIN_EMAIL = "hello@rapidkitch.com";
-const STORE_NAME = "RapidKitch";
+const ADMIN_EMAIL = "hello@kitchub.store";
+const STORE_NAME = "Kitchub Store";
 
 interface OrderItem {
   product_name: string;
@@ -237,7 +237,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: `${STORE_NAME} <onboarding@resend.dev>`,
         to: [shipping.email],
-        subject: `Order Confirmation - RapidKitchen #${orderId.slice(0, 8).toUpperCase()}`,
+        subject: `Order Confirmation - Kitchub Store #${orderId.slice(0, 8).toUpperCase()}`,
         html: generateCustomerEmail(orderId, order.total_price, shipping, orderItems),
       }),
     });

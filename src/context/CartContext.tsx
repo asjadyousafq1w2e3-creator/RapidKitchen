@@ -20,7 +20,7 @@ interface CartContextType {
   justAdded: string | null;
 }
 
-const CART_STORAGE_KEY = "rapidkitch_cart";
+const CART_STORAGE_KEY = "kitchub_cart";
 
 const loadCartFromStorage = (): CartItem[] => {
   try {

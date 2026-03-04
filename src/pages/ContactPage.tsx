@@ -3,6 +3,7 @@ import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Helmet } from "react-helmet-async";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
@@ -16,12 +17,17 @@ const ContactPage = () => {
   const contactInfo = [
     { icon: MapPin, label: "Address", value: "Office 12, Gulberg III, Lahore, Pakistan" },
     { icon: Phone, label: "Phone", value: "+92 321 1234567" },
-    { icon: Mail, label: "Email", value: "hello@rapidkitch.com" },
+    { icon: Mail, label: "Email", value: "hello@kitchub.store" },
     { icon: Clock, label: "Hours", value: "Mon - Sat: 9AM - 8PM PKT" },
   ];
 
   return (
     <>
+      <Helmet>
+        <title>Contact Us | Kitchub Store</title>
+        <meta name="description" content="Get in touch with the Kitchub Store team. Have questions about our products or your order? We are here to help." />
+        <link rel="canonical" href="https://kitchub.store/contact" />
+      </Helmet>
       <Navbar />
       <main className="pt-24">
         {/* Header */}
@@ -37,7 +43,7 @@ const ContactPage = () => {
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Have a question about our products, your order, or just want to say hello?
-              We're here to help. Reach out to the RapidKitchen team.
+              We're here to help. Reach out to the Kitchub Store team.
             </p>
           </motion.div>
         </section>

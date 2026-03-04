@@ -24,14 +24,13 @@ const FeaturedProducts = () => {
         </p>
       </motion.div>
 
-      <div className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-10">
+      <div className="flex overflow-x-auto hide-scrollbar sm:flex-wrap justify-start sm:justify-center gap-2 mb-8 sm:mb-10 px-4 sm:px-0">
         {categories.map((cat: string) => (
           <button
             key={cat}
             onClick={() => setActive(cat)}
-            className={`px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
-              active === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
-            }`}
+            className={`whitespace-nowrap px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${active === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
+              }`}
           >
             {cat}
           </button>

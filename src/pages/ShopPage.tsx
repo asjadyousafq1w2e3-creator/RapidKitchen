@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SlidersHorizontal, Grid2X2, LayoutList } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const ShopPage = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -35,6 +36,11 @@ const ShopPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Shop All | Kitchub Store</title>
+        <meta name="description" content="Browse our entire collection of premium kitchen and daily home products." />
+        <link rel="canonical" href="https://kitchub.store/shop" />
+      </Helmet>
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container-tight px-4 sm:px-6 lg:px-8">
@@ -44,12 +50,12 @@ const ShopPage = () => {
           </motion.div>
 
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex overflow-x-auto hide-scrollbar sm:flex-wrap gap-2 pb-2 -mb-2">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActive(cat)}
-                  className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all ${active === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
+                  className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all ${active === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-muted"
                     }`}
                 >
                   {cat}

@@ -11,7 +11,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   auth: {
     storage: localStorage,
     // Custom storage key to prevent conflicts with old Lovable sessions
-    storageKey: 'rapidkitchen-auth-token',
+    storageKey: 'kitchub-auth-token',
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,

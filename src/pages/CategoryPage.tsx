@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mapProduct } from "@/pages/ShopPage";
+import { Helmet } from "react-helmet-async";
 
 const CategoryPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -49,6 +50,11 @@ const CategoryPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{category ? `${category.name} | Kitchub Store` : "Category | Kitchub Store"}</title>
+        <meta name="description" content={category?.description || `Explore our premium selection of ${category?.name || 'kitchen'} products.`} />
+        <link rel="canonical" href={`https://kitchub.store/category/${slug}`} />
+      </Helmet>
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container-tight px-4 sm:px-6 lg:px-8">
@@ -77,12 +83,12 @@ const CategoryPage = () => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar - Categories */}
             <aside className="lg:w-56 flex-shrink-0">
-              <div className="bg-card rounded-2xl p-4 shadow-soft">
-                <h3 className="font-display text-sm text-foreground mb-3">Categories</h3>
-                <nav className="space-y-1">
+              <div className="lg:bg-card lg:rounded-2xl lg:p-4 lg:shadow-soft">
+                <h3 className="hidden lg:block font-display text-sm text-foreground mb-3">Categories</h3>
+                <nav className="flex overflow-x-auto hide-scrollbar gap-2 pb-2 -mb-2 lg:pb-0 lg:mb-0 lg:flex-col lg:space-y-1 lg:overflow-visible">
                   <Link
                     to="/shop"
-                    className="block px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+                    className="whitespace-nowrap px-4 py-2 lg:block lg:px-3 lg:py-2 rounded-full lg:rounded-xl text-sm font-medium transition-colors bg-secondary text-secondary-foreground lg:bg-transparent lg:text-muted-foreground hover:bg-muted lg:hover:bg-secondary lg:hover:text-foreground"
                   >
                     All Products
                   </Link>
@@ -90,11 +96,10 @@ const CategoryPage = () => {
                     <Link
                       key={cat.id}
                       to={`/category/${cat.slug}`}
-                      className={`block px-3 py-2 rounded-xl text-sm transition-colors ${
-                        cat.slug === slug
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                      }`}
+                      className={`whitespace-nowrap px-4 py-2 lg:block lg:px-3 lg:py-2 rounded-full lg:rounded-xl text-sm transition-colors ${cat.slug === slug
+                        ? "bg-primary text-primary-foreground font-medium lg:bg-primary/10 lg:text-primary"
+                        : "bg-secondary text-secondary-foreground lg:bg-transparent lg:text-muted-foreground hover:bg-muted lg:hover:bg-secondary lg:hover:text-foreground"
+                        }`}
                     >
                       {cat.name}
                     </Link>

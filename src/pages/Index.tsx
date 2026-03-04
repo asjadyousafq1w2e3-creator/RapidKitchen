@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import { lazy, Suspense } from "react";
+import { Helmet } from "react-helmet-async";
 
 // Lazy load below-the-fold sections - only loaded when user scrolls near them
 const FeaturedProducts = lazy(() => import("@/components/FeaturedProducts"));
@@ -19,6 +20,11 @@ const SectionLoader = () => (
 
 const Index = () => (
   <>
+    <Helmet>
+      <title>Kitchub Store | Premium Daily Home & Kitchen Products</title>
+      <meta name="description" content="Discover premium daily home products and kitchen essentials tailored for your dynamic lifestyle. Create your perfect home with Kitchub Store." />
+      <link rel="canonical" href="https://kitchub.store" />
+    </Helmet>
     <Navbar />
     <main>
       <Hero />

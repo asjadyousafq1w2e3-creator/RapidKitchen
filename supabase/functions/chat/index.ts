@@ -34,7 +34,7 @@ serve(async (req) => {
       })
       .join("\n");
 
-    const systemPrompt = `You are RapidKitch's friendly AI shopping assistant. You help customers find the perfect kitchen products.
+    const systemPrompt = `You are Kitchub Store's friendly AI shopping assistant. You help customers find the perfect kitchen products.
 
 ## YOUR PRODUCT CATALOG (REAL STORE DATA):
 ${productCatalog}
@@ -51,21 +51,21 @@ ${productCatalog}
 6. Use PKR for all prices
 
 ## STORE POLICIES:
-- Store: RapidKitchen — Premium Kitchen Gadgets Pakistan
-- Website: rapidkitch.com
+- Store: Kitchub Store — Premium Daily Home & Kitchen Products
+- Website: kitchub.store
 - Free shipping above PKR 3,000
 - Standard delivery: 3-5 business days
 - Express delivery: PKR 300 for 1-2 days
 - 30-day hassle-free returns
 - 1-year manufacturer warranty
 - Payment: COD, Credit/Debit Card, Bank Transfer, JazzCash/EasyPaisa
-- Contact: hello@rapidkitch.com`;
+- Contact: hello@kitchub.store`;
 
     // Build Gemini conversation format
     // System prompt goes as first user turn in Gemini
     const geminiContents = [
       { role: "user", parts: [{ text: systemPrompt }] },
-      { role: "model", parts: [{ text: "Understood! I'm ready to help RapidKitch customers find the perfect kitchen products." }] },
+      { role: "model", parts: [{ text: "Understood! I'm ready to help Kitchub Store customers find the perfect kitchen products." }] },
       ...messages.map((m: any) => ({
         role: m.role === "assistant" ? "model" : "user",
         parts: [{ text: m.content }],

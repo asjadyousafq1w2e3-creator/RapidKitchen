@@ -1,6 +1,6 @@
-# RapidKitchen Premium Store 🍳
+# Kitchub Store 🍳
 
-**URL**: https://rapidkitch.vercel.app
+**URL**: https://kitchub.store
 
 A full-stack e-commerce store for premium kitchen gadgets, built with:
 

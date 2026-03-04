@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Truck, CreditCard, RotateCcw, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Helmet } from "react-helmet-async";
 
 const policies = [
   {
@@ -24,17 +25,17 @@ const policies = [
       "Items must be unused and in original packaging.",
       "Contact our support team to initiate a return.",
       "Refunds are processed within 5-7 business days of receiving the item.",
-      "RapidKitchen reserves the right to refuse returns that do not meet these conditions.",
+      "Kitchub Store reserves the right to refuse returns that do not meet these conditions.",
     ],
   },
   {
     icon: Shield,
     title: "Privacy Policy",
     content: [
-      "When you purchase from RapidKitchen, we collect personal information such as name, address, and email.",
+      "When you purchase from Kitchub Store, we collect personal information such as name, address, and email.",
       "We use your information to process orders and improve our services.",
       "Your payment information is securely processed and never stored on our servers.",
-      "RapidKitchen will not sell, rent, or lease your personal information to third parties.",
+      "Kitchub Store will not sell, rent, or lease your personal information to third parties.",
       "You can request deletion of your account data at any time.",
       "We use cookies to improve your shopping experience.",
     ],
@@ -43,7 +44,7 @@ const policies = [
     icon: CreditCard,
     title: "Terms of Service",
     content: [
-      "By using RapidKitch, you agree to these terms.",
+      "By using Kitchub Store, you agree to these terms.",
       "Prices are in PKR and may change without notice.",
       "Product images are for illustration; minor variations may occur.",
       "We reserve the right to cancel orders due to stock issues.",
@@ -54,6 +55,11 @@ const policies = [
 
 const PoliciesPage = () => (
   <>
+    <Helmet>
+      <title>Store Policies | Kitchub Store</title>
+      <meta name="description" content="Read Kitchub Store's policies on shipping, returns, privacy, and terms of service. We ensure a transparent and secure shopping experience." />
+      <link rel="canonical" href="https://kitchub.store/policies" />
+    </Helmet>
     <Navbar />
     <main className="pt-24 pb-16">
       <div className="container-tight px-4 sm:px-6 lg:px-8">
@@ -64,7 +70,7 @@ const PoliciesPage = () => (
         >
           <h1 className="font-display text-4xl sm:text-5xl text-foreground mb-4">Policies</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Everything you need to know about shopping with RapidKitch.
+            Everything you need to know about shopping with Kitchub Store.
           </p>
         </motion.div>
 

@@ -13,7 +13,7 @@ const ChatWidget = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "Hi! 👋 I'm RapidKitch's AI assistant. How can I help you today?" },
+    { role: "assistant", content: "Hi! 👋 I'm Kitchub Store's AI assistant. How can I help you today?" },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -132,7 +132,7 @@ const ChatWidget = () => {
                   <Bot className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">RapidKitch AI</p>
+                  <p className="text-sm font-medium text-foreground">Kitchub Store AI</p>
                   <p className="text-[10px] text-muted-foreground">Always here to help</p>
                 </div>
               </div>
@@ -151,11 +151,10 @@ const ChatWidget = () => {
                     </div>
                   )}
                   <div
-                    className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${
-                      msg.role === "user"
+                    className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${msg.role === "user"
                         ? "bg-primary text-primary-foreground rounded-br-md"
                         : "bg-secondary text-foreground rounded-bl-md"
-                    }`}
+                      }`}
                   >
                     {msg.role === "assistant" ? (
                       <div className="prose prose-sm max-w-none [&>p]:m-0 [&>ul]:m-0 [&>ol]:m-0 [&_a]:text-primary [&_a]:font-semibold [&_a]:underline">

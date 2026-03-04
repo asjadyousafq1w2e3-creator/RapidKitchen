@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Award, Users, Leaf, Heart } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Helmet } from "react-helmet-async";
 
 const values = [
   { icon: Award, title: "Quality First", description: "Every product undergoes rigorous testing. We partner with top manufacturers to bring you tools that last." },
@@ -12,6 +13,11 @@ const values = [
 
 const AboutPage = () => (
   <>
+    <Helmet>
+      <title>About Us | Kitchub Store</title>
+      <meta name="description" content="Learn about our story, from kitchen lovers for kitchen lovers. Quality, sustainability, and community drive Kitchub Store." />
+      <link rel="canonical" href="https://kitchub.store/about" />
+    </Helmet>
     <Navbar />
     <main className="pt-24">
       {/* Header */}
@@ -22,7 +28,7 @@ const AboutPage = () => (
             <span className="text-xs sm:text-sm font-medium tracking-[0.2em] uppercase text-primary">Our Story</span>
             <div className="w-8 h-px bg-primary" />
           </div>
-          <h1 className="font-display text-4xl sm:text-5xl text-foreground mb-6">About RapidKitchen</h1>
+          <h1 className="font-display text-4xl sm:text-5xl text-foreground mb-6">About Kitchub Store</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
             Experience the joy of cooking with tools designed for both form and function.
             Discover our collection and elevate your culinary journey today.
@@ -68,7 +74,7 @@ const AboutPage = () => (
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed text-sm sm:text-base">
                 <p>
-                  RapidKitch started in 2023 when our founder, tired of low-quality kitchen tools flooding the market,
+                  Kitchub Store started in 2023 when our founder, tired of low-quality kitchen tools flooding the market,
                   decided to create a brand that stands for quality, design, and functionality.
                 </p>
                 <p>

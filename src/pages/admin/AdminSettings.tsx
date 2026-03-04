@@ -5,8 +5,8 @@ import { Save, Settings, Store, Truck, CreditCard, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 const defaultSettings: Record<string, string> = {
-  store_name: "RapidKitchen",
-  store_email: "hello@rapidkitchen.pk",
+  store_name: "Kitchub Store",
+  store_email: "hello@kitchub.store",
   store_phone: "+92 300 1234567",
   store_address: "Lahore, Pakistan",
   currency: "PKR",
@@ -14,8 +14,8 @@ const defaultSettings: Record<string, string> = {
   shipping_fee: "250",
   tax_rate: "0",
   order_notification_email: "",
-  meta_title: "RapidKitch - Premium Kitchen Gadgets Pakistan",
-  meta_description: "Shop premium kitchen gadgets and accessories at RapidKitch. Free shipping above PKR 3,500.",
+  meta_title: "Kitchub Store | Premium Daily Home & Kitchen Products",
+  meta_description: "Shop Kitchub Store for the best daily home products, premium kitchen gadgets, and small items every mom wants in her house. Free shipping above PKR 3,500.",
 };
 
 const AdminSettings = () => {

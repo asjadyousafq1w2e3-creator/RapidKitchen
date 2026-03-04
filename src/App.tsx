@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import CartDrawer from "@/components/CartDrawer";
@@ -52,46 +53,48 @@ const PageLoader = () => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <AuthProvider>
-          <CartProvider>
-            <Toaster />
-            <Sonner />
-            <CartDrawer />
-            <Suspense fallback={null}>
-              <ChatWidget />
-            </Suspense>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/category/:slug" element={<CategoryPage />} />
-                <Route path="/policies" element={<PoliciesPage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/account" element={<AccountPage />} />
-                <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-                <Route path="/admin/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
-                <Route path="/admin/categories" element={<AdminGuard><AdminCategories /></AdminGuard>} />
-                <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
-                <Route path="/admin/customers" element={<AdminGuard><AdminCustomers /></AdminGuard>} />
-                <Route path="/admin/coupons" element={<AdminGuard><AdminCoupons /></AdminGuard>} />
-                <Route path="/admin/settings" element={<AdminGuard><AdminSettings /></AdminGuard>} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </CartProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <AuthProvider>
+            <CartProvider>
+              <Toaster />
+              <Sonner />
+              <CartDrawer />
+              <Suspense fallback={null}>
+                <ChatWidget />
+              </Suspense>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/product/:id" element={<ProductPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/category/:slug" element={<CategoryPage />} />
+                  <Route path="/policies" element={<PoliciesPage />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/account" element={<AccountPage />} />
+                  <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                  <Route path="/admin/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
+                  <Route path="/admin/categories" element={<AdminGuard><AdminCategories /></AdminGuard>} />
+                  <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                  <Route path="/admin/customers" element={<AdminGuard><AdminCustomers /></AdminGuard>} />
+                  <Route path="/admin/coupons" element={<AdminGuard><AdminCoupons /></AdminGuard>} />
+                  <Route path="/admin/settings" element={<AdminGuard><AdminSettings /></AdminGuard>} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </CartProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

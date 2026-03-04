@@ -142,7 +142,7 @@ export const testimonials = [
     id: 1,
     name: "Sarah Ahmed",
     role: "Home Chef",
-    content: "RapidKitch products have completely transformed my kitchen. The Smart Chopper Pro saves me 30 minutes every day!",
+    content: "Kitchub Store products have completely transformed my kitchen. The Smart Chopper Pro saves me 30 minutes every day!",
     rating: 5,
     avatar: "SA",
   },
@@ -150,7 +150,7 @@ export const testimonials = [
     id: 2,
     name: "Ali Hassan",
     role: "Food Blogger",
-    content: "I've tried dozens of kitchen brands, and RapidKitch stands out for quality and design. Every product feels premium.",
+    content: "I've tried dozens of kitchen brands, and Kitchub Store stands out for quality and design. Every product feels premium.",
     rating: 5,
     avatar: "AH",
   },
@@ -187,7 +187,7 @@ export const faqs = [
   },
   {
     question: "Are your products covered by warranty?",
-    answer: "All RapidKitch products come with a 1-year manufacturer warranty. Premium products include an extended 2-year warranty at no additional cost.",
+    answer: "All Kitchub Store products come with a 1-year manufacturer warranty. Premium products include an extended 2-year warranty at no additional cost.",
   },
   {
     question: "How do I track my order?",

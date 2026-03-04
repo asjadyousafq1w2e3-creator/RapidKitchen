@@ -6,6 +6,7 @@ import { Navigate } from "react-router-dom";
 import { oauthClient } from "@/integrations/auth/index";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Helmet } from "react-helmet-async";
 
 const AuthPage = () => {
   const { user, isAdmin, signIn, signUp } = useAuth();
@@ -44,6 +45,11 @@ const AuthPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Account Access | Kitchub Store</title>
+        <meta name="description" content="Sign in or create an account with Kitchub Store to track your orders, manage your wishlist, and enjoy faster checkout." />
+        <link rel="canonical" href="https://kitchub.store/auth" />
+      </Helmet>
       <Navbar />
       <main className="pt-24 pb-16 min-h-screen flex items-center">
         <div className="container-tight px-4 sm:px-6 lg:px-8">
@@ -53,9 +59,9 @@ const AuthPage = () => {
             className="max-w-md mx-auto"
           >
             <div className="text-center mb-8">
-              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-3">Welcome to RapidKitchen</h1>
+              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-3">Welcome to Kitchub Store</h1>
               <p className="text-sm text-muted-foreground">
-                {isLogin ? "Sign in to your RapidKitchen account" : "Join the RapidKitchen family"}
+                {isLogin ? "Sign in to your Kitchub Store account" : "Join the Kitchub Store family"}
               </p>
             </div>
 

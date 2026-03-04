@@ -9,6 +9,7 @@ import ReviewSection from "@/components/ReviewSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mapProduct } from "./ShopPage";
+import { Helmet } from "react-helmet-async";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -22,6 +23,7 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"description" | "specifications" | "reviews">("description");
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -50,32 +52,11 @@ const ProductPage = () => {
     setSelectedColor(0);
     setQuantity(1);
     setActiveTab("description");
+    setIsDescriptionExpanded(false);
   }, [id]);
 
   useEffect(() => {
-    if (product) {
-      const title = product.metaTitle || product.name;
-      const description = product.metaDescription || product.shortDescription || product.description?.substring(0, 160) || "";
-      const keywords = product.metaKeywords || `${product.name}, ${product.category}, buy ${product.name}, buy online`;
-
-      document.title = title;
-
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.setAttribute('name', 'description');
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.setAttribute('content', description);
-
-      let metaKeywords = document.querySelector('meta[name="keywords"]');
-      if (!metaKeywords) {
-        metaKeywords = document.createElement('meta');
-        metaKeywords.setAttribute('name', 'keywords');
-        document.head.appendChild(metaKeywords);
-      }
-      metaKeywords.setAttribute('content', keywords);
-    }
+    // Left empty since Helmet handles this now over the raw DOM manipulation
   }, [product]);
 
   if (loading) {
@@ -127,6 +108,12 @@ const ProductPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{product.metaTitle || `${product.name} | Kitchub Store`}</title>
+        <meta name="description" content={product.metaDescription || product.shortDescription || (product.description ? product.description.substring(0, 150) : "")} />
+        {product.metaKeywords && <meta name="keywords" content={product.metaKeywords} />}
+        <link rel="canonical" href={`https://kitchub.store/product/${product.id}`} />
+      </Helmet>
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container-tight px-4 sm:px-6 lg:px-8">
@@ -175,7 +162,7 @@ const ProductPage = () => {
               </div>
 
               {/* Short Description */}
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed text-sm sm:text-base mb-2">
                 {product.shortDescription || (product.description ? product.description.substring(0, 150) + "..." : "")}
               </p>
 
@@ -246,8 +233,8 @@ const ProductPage = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`pb-4 text-base sm:text-lg font-medium capitalize transition-colors relative -mb-px ${activeTab === tab
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                     }`}
                 >
                   {tab}
@@ -273,8 +260,26 @@ const ProductPage = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <h3 className="font-display text-2xl text-foreground mb-6">Product Description</h3>
-                    <div className="prose prose-sm sm:prose-base max-w-none text-muted-foreground">
-                      <p className="leading-relaxed whitespace-pre-wrap">{product.description}</p>
+                    <div className="relative">
+                      <motion.div
+                        layout
+                        className={`prose prose-sm sm:prose-base max-w-none text-muted-foreground ${!isDescriptionExpanded ? 'overflow-hidden max-h-[4.5rem]' : ''}`}
+                      >
+                        <p className="leading-relaxed whitespace-pre-wrap">
+                          {product.description}
+                        </p>
+                      </motion.div>
+
+                      {product.description && product.description.length > 200 && (
+                        <div className={`flex items-end ${!isDescriptionExpanded ? 'absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-background to-transparent' : 'mt-4'}`}>
+                          <button
+                            onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                            className="text-primary font-medium hover:underline focus:outline-none flex items-center gap-1 bg-background pb-0.5 pr-2"
+                          >
+                            {isDescriptionExpanded ? "Read Less" : "Read More"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
