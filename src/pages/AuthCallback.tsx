@@ -22,35 +22,42 @@ const AuthCallback = () => {
                 return;
             }
 
-            console.log("[AuthCallback] Exchanging code/token for session...");
-            const { data, error } = await supabase.auth.exchangeCodeForSession(
-                window.location.href
-            );
+            // We do NOT need to manually call exchangeCodeForSession.
+            // The Supabase JS Client automatically detects the `code` in the URL
+            // and exchanges it in the background on load.
+            // Trying to exchange it manually causes a "400 Bad Request" (PKCE verifier consumed).
 
-            if (error) {
-                console.error("OAuth callback error:", error.message);
-                // If we already have a user, don't redirect to /auth, just go home
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session?.user) {
-                    console.log("[AuthCallback] Error occurred but user is already signed in. Going home.");
-                    navigate("/", { replace: true });
-                } else {
-                    navigate("/auth?error=" + encodeURIComponent(error.message), { replace: true });
-                }
-                return;
-            }
+            const { data: { session } } = await supabase.auth.getSession();
 
-            if (data.session?.user) {
+            if (session?.user) {
+                // If the background exchange was already fast enough to get the session
                 const { data: roleData } = await supabase
                     .from("user_roles")
                     .select("role")
-                    .eq("user_id", data.session.user.id)
+                    .eq("user_id", session.user.id)
                     .eq("role", "admin")
                     .maybeSingle();
 
                 navigate(roleData ? "/admin" : "/account", { replace: true });
             } else {
-                navigate("/", { replace: true });
+                // Listen for the auth event to complete in the background
+                const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+                    if (event === 'SIGNED_IN' && currentSession?.user) {
+                        const { data: roleData } = await supabase
+                            .from("user_roles")
+                            .select("role")
+                            .eq("user_id", currentSession.user.id)
+                            .eq("role", "admin")
+                            .maybeSingle();
+
+                        navigate(roleData ? "/admin" : "/account", { replace: true });
+                    } else if (event === 'SIGNED_OUT') {
+                        navigate("/auth?error=" + encodeURIComponent("Authentication failed"), { replace: true });
+                    }
+                });
+
+                // Cleanup
+                return () => subscription.unsubscribe();
             }
         };
 
