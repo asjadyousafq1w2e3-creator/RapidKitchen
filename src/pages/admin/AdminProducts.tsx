@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
   Plus, Edit2, Trash2, X, Save, Search, Filter, Eye, Package,
@@ -8,7 +7,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+// Cloudinary uploads handled via /api/uploads/image
 
 const emptyProduct = {
   name: "", slug: "", price: 0, original_price: null, description: "",
@@ -32,21 +31,31 @@ const AdminProducts = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [{ data: prods }, { data: cats }] = await Promise.all([
-      supabase.from("products").select("*").order("created_at", { ascending: false }),
-      supabase.from("categories").select("*").order("name"),
-    ]);
-    setProducts(prods || []);
-    setCategories(cats || []);
-    setLoading(false);
+    try {
+      const [pRes, cRes] = await Promise.all([
+        fetch('/api/admin/products').then(r => r.json()),
+        fetch('/api/admin/categories').then(r => r.json()),
+      ]);
+      setProducts(pRes.products || []);
+      setCategories(cRes.categories || []);
+    } catch (e) {
+      console.error('Failed to fetch admin data', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
-    const { error } = await supabase.from("products").delete().eq("id", id);
-    if (error) { toast.error("Failed to delete"); return; }
-    toast.success("Product deleted");
-    fetchAll();
+    try {
+      const res = await fetch(`/api/admin/products?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      toast.success('Product deleted');
+      fetchAll();
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to delete product');
+    }
   };
 
   const handleSave = async (product: any) => {
@@ -84,14 +93,20 @@ const AdminProducts = () => {
       meta_keywords: product.meta_keywords || null,
     };
 
-    if (product.id) {
-      const { error } = await supabase.from("products").update(payload).eq("id", product.id);
-      if (error) { toast.error("Failed to update: " + error.message); return; }
-      toast.success("Product updated");
-    } else {
-      const { error } = await supabase.from("products").insert(payload);
-      if (error) { toast.error("Failed to create: " + error.message); return; }
-      toast.success("Product created");
+    try {
+      if (product.id) {
+        const resp = await fetch('/api/admin/products', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: product.id, ...payload }) });
+        const json = await resp.json();
+        if (!resp.ok) throw new Error(json.error || 'Update failed');
+        toast.success('Product updated');
+      } else {
+        const resp = await fetch('/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const json = await resp.json();
+        if (!resp.ok) throw new Error(json.error || 'Create failed');
+        toast.success('Product created');
+      }
+    } catch (e: any) {
+      toast.error('Failed to save product: ' + (e.message || e));
     }
     setShowForm(false);
     setEditing(null);
@@ -258,16 +273,25 @@ const AdminProducts = () => {
 };
 
 const uploadImage = async (file: File): Promise<string | null> => {
-  const ext = file.name.split(".").pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { data, error } = await supabase.storage
-    .from("product-images")
-    .upload(fileName, file, { contentType: file.type });
-  if (error) {
-    toast.error("Upload failed: " + error.message);
+  try {
+    const reader = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result));
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+
+    const resp = await fetch('/api/uploads/image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: reader }) });
+    const json = await resp.json();
+    if (!resp.ok) {
+      toast.error('Upload failed: ' + (json.error || 'server error'));
+      return null;
+    }
+    return json.url;
+  } catch (e: any) {
+    toast.error('Upload failed: ' + (e.message || e));
     return null;
   }
-  return `${SUPABASE_URL}/storage/v1/object/public/product-images/${data.path}`;
 };
 
 const ProductForm = ({

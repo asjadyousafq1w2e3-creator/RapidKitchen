@@ -5,7 +5,7 @@
 A full-stack e-commerce store for premium kitchen gadgets, built with:
 
 - **Frontend**: React + TypeScript + Vite + Tailwind CSS
-- **Backend**: Supabase (Auth, Database, Edge Functions, Storage)
+-- **Backend**: Vercel serverless API + MongoDB Atlas (orders, products, auth endpoints)
 - **Hosting**: Vercel
 - **Email**: Resend
 - **AI Chat**: OpenAI (gpt-4o-mini)
@@ -23,18 +23,12 @@ Create a `.env` file (see `.env.example` for all required variables):
 
 ```sh
 cp .env.example .env
-# Fill in your Supabase credentials
+# Fill in your MongoDB, Google OAuth, and Resend credentials
 ```
 
 ## Deployment
 
 The app is deployed on Vercel. Push to `main` to trigger a deployment.
-
-Edge Functions are deployed via the Supabase CLI:
-
-```sh
-supabase functions deploy --project-ref YOUR_PROJECT_ID
-```
 
 ## Environment Variables
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Plus, Edit2, Trash2, X, Save, FolderTree } from "lucide-react";
 import { toast } from "sonner";
@@ -15,45 +14,69 @@ const AdminCategories = () => {
 
   const fetchCategories = async () => {
     setLoading(true);
-    const { data } = await supabase.from("categories").select("*").order("sort_order").order("name");
-    setCategories(data || []);
+    try {
+      const res = await fetch('/api/admin/categories');
+      const json = await res.json();
+      setCategories(json.categories || []);
+    } catch (e) {
+      console.error('Failed to load categories', e);
+      setCategories([]);
+    }
     setLoading(false);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this category?")) return;
-    const { error } = await supabase.from("categories").delete().eq("id", id);
-    if (error) { toast.error("Failed to delete"); return; }
-    toast.success("Category deleted");
-    fetchCategories();
+    try {
+      const res = await fetch(`/api/admin/categories?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      toast.success('Category deleted');
+      fetchCategories();
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to delete category');
+    }
   };
 
   const handleSave = async (cat: any) => {
     const slug = cat.slug || cat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const payload = { name: cat.name, slug, description: cat.description || "", image: cat.image || "", sort_order: Number(cat.sort_order) || 0, parent_id: cat.parent_id || null };
 
-    if (cat.id) {
-      const { error } = await supabase.from("categories").update(payload).eq("id", cat.id);
-      if (error) { toast.error("Failed: " + error.message); return; }
-      toast.success("Category updated");
-    } else {
-      const { error } = await supabase.from("categories").insert(payload);
-      if (error) { toast.error("Failed: " + error.message); return; }
-      toast.success("Category created");
+    try {
+      if (cat.id) {
+        const res = await fetch('/api/admin/categories', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: cat.id, ...payload }) });
+        if (!res.ok) throw new Error('Update failed');
+        toast.success('Category updated');
+      } else {
+        const res = await fetch('/api/admin/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error('Create failed');
+        toast.success('Category created');
+      }
+      setShowForm(false);
+      setEditing(null);
+      fetchCategories();
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to save category');
     }
-    setShowForm(false);
-    setEditing(null);
-    fetchCategories();
   };
 
   // Count products per category
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   useEffect(() => {
-    supabase.from("products").select("category").then(({ data }) => {
-      const counts: Record<string, number> = {};
-      (data || []).forEach((p) => { counts[p.category] = (counts[p.category] || 0) + 1; });
-      setProductCounts(counts);
-    });
+    (async () => {
+      try {
+        const res = await fetch('/api/products');
+        const json = await res.json();
+        const data = json.products || [];
+        const counts: Record<string, number> = {};
+        data.forEach((p: any) => { counts[p.category] = (counts[p.category] || 0) + 1; });
+        setProductCounts(counts);
+      } catch (e) {
+        console.error('Failed to count products', e);
+        setProductCounts({});
+      }
+    })();
   }, []);
 
   return (

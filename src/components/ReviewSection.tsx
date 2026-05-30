@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Send, Trash2, Edit2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 
@@ -71,12 +70,14 @@ const ReviewSection = ({ productId }: ReviewSectionProps) => {
   const userReview = reviews.find((r) => r.user_id === user?.id);
 
   const fetchReviews = async () => {
-    const { data } = await supabase
-      .from("reviews")
-      .select("*")
-      .eq("product_id", productId)
-      .order("created_at", { ascending: false });
-    setReviews((data as Review[]) || []);
+    try {
+      const res = await fetch(`/api/reviews?productId=${encodeURIComponent(productId)}`);
+      const json = await res.json();
+      setReviews(json.reviews || []);
+    } catch (e) {
+      console.error('Failed to load reviews', e);
+      setReviews([]);
+    }
     setLoading(false);
   };
 
@@ -113,18 +114,9 @@ const ReviewSection = ({ productId }: ReviewSectionProps) => {
     setSubmitting(true);
 
     if (editingId) {
-      await supabase
-        .from("reviews")
-        .update({ rating, title: title.trim() || null, content: content.trim() })
-        .eq("id", editingId);
+      await fetch('/api/reviews', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editingId, rating, title: title.trim() || null, content: content.trim() }) });
     } else {
-      await supabase.from("reviews").insert({
-        product_id: productId,
-        user_id: user!.id,
-        rating,
-        title: title.trim() || null,
-        content: content.trim(),
-      });
+      await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId, rating, title: title.trim() || null, content: content.trim() }) });
     }
 
     resetForm();
@@ -133,7 +125,7 @@ const ReviewSection = ({ productId }: ReviewSectionProps) => {
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from("reviews").delete().eq("id", id);
+    await fetch(`/api/reviews?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
     await fetchReviews();
   };
 

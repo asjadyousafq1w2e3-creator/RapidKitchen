@@ -4,7 +4,6 @@ import { ShoppingBag, Menu, X, Search, User, ChevronRight, ChevronDown, ChefHat,
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import logoImg from "@/assets/logo.png";
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -43,10 +42,15 @@ const Navbar = () => {
       return;
     }
     const fetchCategories = async () => {
-      const { data } = await supabase.from("categories").select("name, slug").order("sort_order");
-      if (data) {
-        setCategories(data);
+      try {
+        const res = await fetch('/api/admin/categories');
+        if (!res.ok) return;
+        const json = await res.json();
+        const data = json.categories || [];
+        setCategories(data.map((c: any) => ({ name: c.name, slug: c.slug, id: c.id || c._id })));
         sessionStorage.setItem("nav_categories", JSON.stringify(data));
+      } catch (e) {
+        console.error('Failed to load categories', e);
       }
     };
     fetchCategories();

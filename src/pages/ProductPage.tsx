@@ -2,7 +2,6 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Minus, Plus, ShoppingBag, ArrowLeft, Truck, RotateCcw, Shield, Check, CreditCard } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import ReviewSection from "@/components/ReviewSection";
@@ -28,22 +27,20 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
-      // Try to find by slug first, then by id
-      let { data } = await supabase.from("products").select("*").eq("slug", id).maybeSingle();
+      // Try to find by slug first, then by id via our API
+      let json = await fetch(`/api/products?slug=${encodeURIComponent(String(id || ''))}`).then(r => r.json());
+      let data = json.product;
       if (!data) {
-        const res = await supabase.from("products").select("*").eq("id", id).maybeSingle();
-        data = res.data;
+        const res = await fetch(`/api/products?id=${encodeURIComponent(String(id || ''))}`);
+        const resJson = await res.json();
+        data = resJson.product;
       }
       if (data) {
         setProduct(mapProduct(data));
         // Fetch related products
-        const { data: rel } = await supabase
-          .from("products")
-          .select("*")
-          .eq("category", data.category)
-          .neq("id", data.id)
-          .limit(3);
-        setRelated((rel || []).map(mapProduct));
+        const relRes = await fetch(`/api/products?category=${encodeURIComponent(data.category)}&limit=3`);
+        const relJson = await relRes.json();
+        setRelated((relJson.products || []).filter((p: any) => p.id !== data.id).map(mapProduct));
       }
       setLoading(false);
     };

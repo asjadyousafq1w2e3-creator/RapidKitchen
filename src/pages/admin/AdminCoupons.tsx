@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Plus, Edit2, Trash2, X, Save, Percent, ToggleLeft, ToggleRight } from "lucide-react";
 import { toast } from "sonner";
@@ -15,22 +14,44 @@ const AdminCoupons = () => {
 
   const fetchCoupons = async () => {
     setLoading(true);
-    const { data } = await supabase.from("coupons").select("*").order("created_at", { ascending: false });
-    setCoupons(data || []);
+    try {
+      const res = await fetch('/api/admin/coupons');
+      if (res.ok) {
+        const json = await res.json();
+        setCoupons(json.coupons || []);
+      } else {
+        setCoupons([]);
+      }
+    } catch (e) {
+      console.error('Failed to fetch coupons', e);
+      setCoupons([]);
+    }
     setLoading(false);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this coupon?")) return;
-    await supabase.from("coupons").delete().eq("id", id);
-    toast.success("Coupon deleted");
-    fetchCoupons();
+    try {
+      const res = await fetch(`/api/admin/coupons?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      toast.success('Coupon deleted');
+      fetchCoupons();
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to delete coupon');
+    }
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    await supabase.from("coupons").update({ is_active: !current }).eq("id", id);
-    toast.success(current ? "Coupon deactivated" : "Coupon activated");
-    fetchCoupons();
+    try {
+      const res = await fetch(`/api/admin/coupons`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, is_active: !current }) });
+      if (!res.ok) throw new Error('Update failed');
+      toast.success(current ? 'Coupon deactivated' : 'Coupon activated');
+      fetchCoupons();
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to update coupon');
+    }
   };
 
   const handleSave = async (coupon: any) => {
@@ -43,19 +64,23 @@ const AdminCoupons = () => {
       is_active: coupon.is_active,
       expires_at: coupon.expires_at || null,
     };
-
-    if (coupon.id) {
-      const { error } = await supabase.from("coupons").update(payload).eq("id", coupon.id);
-      if (error) { toast.error("Failed: " + error.message); return; }
-      toast.success("Coupon updated");
-    } else {
-      const { error } = await supabase.from("coupons").insert(payload);
-      if (error) { toast.error("Failed: " + error.message); return; }
-      toast.success("Coupon created");
+    try {
+      if (coupon.id) {
+        const res = await fetch('/api/admin/coupons', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: coupon.id, ...payload }) });
+        if (!res.ok) throw new Error('Update failed');
+        toast.success('Coupon updated');
+      } else {
+        const res = await fetch('/api/admin/coupons', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error('Create failed');
+        toast.success('Coupon created');
+      }
+      setShowForm(false);
+      setEditing(null);
+      fetchCoupons();
+    } catch (e: any) {
+      console.error(e);
+      toast.error('Failed to save coupon');
     }
-    setShowForm(false);
-    setEditing(null);
-    fetchCoupons();
   };
 
   return (

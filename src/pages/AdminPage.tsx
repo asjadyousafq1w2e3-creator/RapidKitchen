@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -29,12 +28,16 @@ const AdminPage = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const [{ data: prods }, { data: ords }] = await Promise.all([
-      supabase.from("products").select("*").order("created_at", { ascending: false }),
-      supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false }),
-    ]);
-    setProducts(prods || []);
-    setOrders(ords || []);
+    try {
+      const [pRes, oRes] = await Promise.all([
+        fetch('/api/admin/products').then(r => r.json()),
+        fetch('/api/orders').then(r => r.json()),
+      ]);
+      setProducts(pRes.products || []);
+      setOrders(oRes.orders || []);
+    } catch (e) {
+      console.error('Failed to fetch admin data', e);
+    }
     setLoading(false);
   };
 
@@ -47,26 +50,38 @@ const AdminPage = () => {
   const totalProducts = products.length;
 
   const handleDeleteProduct = async (id: string) => {
-    await supabase.from("products").delete().eq("id", id);
-    fetchData();
+    try {
+      const resp = await fetch(`/api/admin/products?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!resp.ok) throw new Error('Delete failed');
+      fetchData();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleUpdateOrderStatus = async (id: string, status: string) => {
-    await supabase.from("orders").update({ status }).eq("id", id);
-    fetchData();
+    try {
+      const resp = await fetch('/api/orders', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) });
+      if (!resp.ok) throw new Error('Update failed');
+      fetchData();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleSaveProduct = async (product: any) => {
-    if (product.id) {
-      const { id, created_at, updated_at, ...rest } = product;
-      await supabase.from("products").update(rest).eq("id", id);
-    } else {
-      const { id, created_at, updated_at, ...rest } = product;
-      await supabase.from("products").insert(rest);
+    try {
+      if (product.id) {
+        await fetch('/api/admin/products', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product) });
+      } else {
+        await fetch('/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product) });
+      }
+      setShowProductForm(false);
+      setEditingProduct(null);
+      fetchData();
+    } catch (e) {
+      console.error('Save product failed', e);
     }
-    setShowProductForm(false);
-    setEditingProduct(null);
-    fetchData();
   };
 
   const tabs = [

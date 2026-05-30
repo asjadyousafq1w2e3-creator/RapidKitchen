@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Save, Settings, Store, Truck, CreditCard, Bell } from "lucide-react";
 import { toast } from "sonner";
@@ -27,22 +26,31 @@ const AdminSettings = () => {
   useEffect(() => { fetchSettings(); }, []);
 
   const fetchSettings = async () => {
-    const { data } = await supabase.from("store_settings").select("*");
-    if (data) {
-      const map: Record<string, string> = { ...defaultSettings };
-      data.forEach((s: any) => { map[s.key] = s.value; });
-      setSettings(map);
+    try {
+      const res = await fetch('/api/admin/settings');
+      if (res.ok) {
+        const json = await res.json();
+        const data = json.settings || [];
+        const map: Record<string, string> = { ...defaultSettings };
+        data.forEach((s: any) => { map[s.key] = s.value; });
+        setSettings(map);
+      }
+    } catch (e) {
+      console.error('Failed to load settings', e);
     }
     setLoading(false);
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const entries = Object.entries(settings);
-    for (const [key, value] of entries) {
-      await supabase.from("store_settings").upsert({ key, value }, { onConflict: "key" });
+    try {
+      const res = await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ settings }) });
+      if (!res.ok) throw new Error('Failed to save');
+      toast.success('Settings saved successfully!');
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to save settings');
     }
-    toast.success("Settings saved successfully!");
     setSaving(false);
   };
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { StatusBadge } from "./AdminDashboard";
 import { ShoppingCart, Search, Eye, X, Printer } from "lucide-react";
@@ -17,23 +16,32 @@ const AdminOrders = () => {
 
   const fetchOrders = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("orders")
-      .select("*, order_items(*)")
-      .order("created_at", { ascending: false });
-    setOrders(data || []);
+    try {
+      const res = await fetch('/api/orders');
+      const json = await res.json();
+      setOrders(json.orders || []);
+    } catch (e) {
+      console.error('Failed to load orders', e);
+      setOrders([]);
+    }
     setLoading(false);
   };
 
   const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-    if (error) { toast.error("Failed to update"); return; }
-    toast.success(`Order marked as ${status}`);
-    fetchOrders();
+    try {
+      const res = await fetch('/api/orders', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) });
+      if (!res.ok) throw new Error('Update failed');
+      toast.success(`Order marked as ${status}`);
+      fetchOrders();
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to update order');
+    }
   };
 
   const filtered = orders.filter((o) => {
-    const matchSearch = o.id.toLowerCase().includes(search.toLowerCase());
+    const idStr = (o.id || o._id || '').toString();
+    const matchSearch = idStr.toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === "all" || o.status === filterStatus;
     return matchSearch && matchStatus;
   });

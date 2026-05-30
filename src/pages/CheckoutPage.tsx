@@ -4,7 +4,7 @@ import { Minus, Plus, X, Truck, Shield, ArrowRight, ChevronLeft, Tag, MapPin, Ph
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+// Removed duplicate import of Navbar
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
@@ -59,22 +59,24 @@ const CheckoutPage = () => {
     if (!coupon.trim()) return;
     setCouponLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("validate-coupon", {
-        body: { code: coupon, order_total: totalPrice },
+      const resp = await fetch('/api/coupons/validate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: coupon, order_total: totalPrice })
       });
-      if (error || !data?.valid) {
-        toast.error(data?.error || "Invalid coupon code");
+      const data = await resp.json();
+      if (!resp.ok || !data?.valid) {
+        toast.error(data?.error || 'Invalid coupon code');
         setCouponApplied(false);
         setCouponDiscount(0);
       } else {
         setCouponApplied(true);
         setCouponDiscount(data.discount);
         setCouponLabel(
-          data.discount_type === "percentage"
+          data.discount_type === 'percentage'
             ? `${data.discount_value}% discount applied!`
             : `PKR ${data.discount_value} discount applied!`
         );
-        toast.success("Coupon applied!");
+        toast.success('Coupon applied!');
       }
     } catch {
       toast.error("Failed to validate coupon");
@@ -110,26 +112,28 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     setPlacingOrder(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-order", {
-        body: {
+      const resp = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           items: items.map((item) => ({
-            productId: item.product.id,
-            quantity: item.quantity,
-            color: item.color || null,
+            id: item.product.id,
+            name: item.product.title || item.product.name || item.product.slug || 'Product',
+            qty: item.quantity,
+            price: item.product.price || item.price || 0,
           })),
           shipping: shippingData,
           couponCode: couponApplied ? coupon : null,
-        },
+        }),
       });
 
-      if (error || !data?.success) {
-        throw new Error(data?.error || error?.message || "Failed to place order. Edge function might not be running.");
-      }
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data?.error || 'Failed to place order');
 
-      setOrderId(data.orderId);
+      setOrderId(data.order._id);
       setOrderPlaced(true);
       clearCart();
-      toast.success("Order placed successfully!");
+      toast.success('Order placed successfully!');
     } catch (err: any) {
       console.error("Order failed:", err);
       const errorMessage = err?.message || "Failed to place order. Please try again.";

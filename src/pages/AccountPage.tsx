@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Package, Heart, LogOut, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Navigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -20,18 +20,29 @@ const AccountPage = () => {
   }, [user]);
 
   const fetchData = async () => {
-    const [{ data: ords }, { data: wishes }] = await Promise.all([
-      supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false }),
-      supabase.from("wishlists").select("*, products(name, price, images, slug)").order("created_at", { ascending: false }),
-    ]);
-    setOrders(ords || []);
-    setWishlists(wishes || []);
+    try {
+      const [ordersResp, wishlistResp] = await Promise.all([fetch('/api/orders'), fetch('/api/wishlist')]);
+      const ordersJson = await ordersResp.json();
+      const wishlistJson = await wishlistResp.json();
+      const ords = ordersJson.orders || ordersJson.order ? (ordersJson.orders || [ordersJson.order]) : [];
+      setOrders(ords || []);
+      setWishlists(wishlistJson.wishlists || []);
+    } catch (e) {
+      console.error('Failed to fetch account data', e);
+      setOrders([]);
+      setWishlists([]);
+    }
     setLoading(false);
   };
 
   const removeFromWishlist = async (id: string) => {
-    await supabase.from("wishlists").delete().eq("id", id);
-    fetchData();
+    // Optimistic removal; wishlist API not implemented yet
+    setWishlists((s) => s.filter((w) => w.id !== id));
+    try {
+      await fetch('/api/wishlist', { method: 'DELETE', body: JSON.stringify({ id }), headers: { 'Content-Type': 'application/json' } });
+    } catch (e) {
+      // ignore
+    }
   };
 
   // Wait for auth to finish loading before deciding to redirect
@@ -86,11 +97,11 @@ const AccountPage = () => {
                   <div key={order.id} className="bg-card rounded-2xl p-4 sm:p-5 shadow-soft">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <p className="text-sm font-medium text-foreground">Order #{order.id.slice(0, 8)}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
+                        <p className="text-sm font-medium text-foreground">Order #{(order.id || order._id || '').toString().slice(0, 8)}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(order.createdAt || order.created_at).toLocaleDateString()}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-bold text-foreground">PKR {order.total_price?.toLocaleString()}</p>
+                        <p className="text-sm font-bold text-foreground">PKR {(order.total || order.total_price || 0).toLocaleString()}</p>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${order.status === "delivered" ? "bg-primary/10 text-primary" :
                           order.status === "shipped" ? "bg-accent/10 text-accent" :
                             "bg-secondary text-secondary-foreground"
@@ -99,7 +110,7 @@ const AccountPage = () => {
                         </span>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">{order.order_items?.length || 0} item(s) • {order.payment_method}</p>
+                    <p className="text-xs text-muted-foreground">{(order.items || order.order_items || []).length || 0} item(s) • {order.payment_method || order.paymentMethod || ''}</p>
                   </div>
                 ))}
               </div>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -17,12 +16,16 @@ const ShopPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [{ data: prods }, { data: cats }] = await Promise.all([
-        supabase.from("products").select("*").order("created_at", { ascending: false }),
-        supabase.from("categories").select("name").order("sort_order"),
-      ]);
-      setProducts((prods || []).map(mapProduct));
-      setCategories(["All", ...(cats || []).map((c: any) => c.name)]);
+      try {
+        const [pRes, cRes] = await Promise.all([
+          fetch('/api/products').then(r => r.json()),
+          fetch('/api/admin/categories').then(r => r.json()),
+        ]);
+        setProducts((pRes.products || []).map(mapProduct));
+        setCategories(["All", ...(cRes.categories || []).map((c: any) => c.name)]);
+      } catch (e) {
+        console.error('Failed to load products', e);
+      }
       setLoading(false);
     };
     fetchData();

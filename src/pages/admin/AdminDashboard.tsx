@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
   DollarSign, ShoppingCart, Package, Users, TrendingUp, TrendingDown,
@@ -19,21 +18,31 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchDashboard = async () => {
-    const [{ data: orders }, { data: products }, { count: customerCount }] = await Promise.all([
-      supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false }),
-      supabase.from("products").select("*").order("created_at", { ascending: false }),
-      supabase.from("orders").select("user_id", { count: "exact", head: true }),
-    ]);
+    try {
+      const [ordersRes, productsRes] = await Promise.all([
+        fetch('/api/orders').then(r => r.json()),
+        fetch('/api/admin/products').then(r => r.json()),
+      ]);
+      const orders = ordersRes.orders || [];
+      const products = productsRes.products || [];
 
-    const totalRevenue = (orders || []).reduce((sum: number, o: any) => sum + (o.total_price || 0), 0);
-    setStats({
-      revenue: totalRevenue,
-      orders: orders?.length || 0,
-      products: products?.length || 0,
-      customers: customerCount || 0,
-    });
-    setRecentOrders((orders || []).slice(0, 8));
-    setTopProducts((products || []).slice(0, 5));
+      const totalRevenue = orders.reduce((sum: number, o: any) => sum + (o.total || o.total_price || 0), 0);
+      const uniqueCustomers = new Set(orders.map((o: any) => (o.user && o.user.id) || (o.userId) || (o.user_id))).size;
+
+      setStats({
+        revenue: totalRevenue,
+        orders: orders.length,
+        products: products.length,
+        customers: uniqueCustomers,
+      });
+      setRecentOrders(orders.slice(0, 8));
+      setTopProducts(products.slice(0, 5));
+    } catch (e) {
+      console.error('Failed to load dashboard data', e);
+      setStats({ revenue: 0, orders: 0, products: 0, customers: 0 });
+      setRecentOrders([]);
+      setTopProducts([]);
+    }
     setLoading(false);
   };
 

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Users, Search, ShoppingCart, DollarSign } from "lucide-react";
 
@@ -12,32 +11,36 @@ const AdminCustomers = () => {
 
   const fetchCustomers = async () => {
     setLoading(true);
-    // Get all orders grouped by user to build customer list
-    const { data: orders } = await supabase
-      .from("orders")
-      .select("user_id, total_price, created_at, shipping_address, order_items(id)")
-      .order("created_at", { ascending: false });
+    try {
+      const resp = await fetch('/api/orders');
+      const json = await resp.json();
+      const orders = json.orders || [];
 
-    // Group by user_id
-    const userMap: Record<string, any> = {};
-    (orders || []).forEach((o) => {
-      if (!o.user_id) return;
-      if (!userMap[o.user_id]) {
-        userMap[o.user_id] = {
-          user_id: o.user_id,
-          total_spent: 0,
-          order_count: 0,
-          last_order: o.created_at,
-          email: (o.shipping_address as any)?.email || "N/A",
-          name: `${(o.shipping_address as any)?.firstName || ""} ${(o.shipping_address as any)?.lastName || ""}`.trim() || "Unknown",
-          city: (o.shipping_address as any)?.city || "N/A",
-        };
-      }
-      userMap[o.user_id].total_spent += o.total_price;
-      userMap[o.user_id].order_count += 1;
-    });
+      const userMap: Record<string, any> = {};
+      orders.forEach((o: any) => {
+        if (!o.user?.id) return;
+        const uid = o.user.id;
+        if (!userMap[uid]) {
+          userMap[uid] = {
+            user_id: uid,
+            total_spent: 0,
+            order_count: 0,
+            last_order: o.createdAt,
+            email: o.user.email || o.shipping?.email || 'N/A',
+            name: o.user.name || `${o.shipping?.firstName || ''} ${o.shipping?.lastName || ''}`.trim() || 'Unknown',
+            city: o.shipping?.city || 'N/A',
+          };
+        }
+        userMap[uid].total_spent += o.total || 0;
+        userMap[uid].order_count += 1;
+        if (new Date(userMap[uid].last_order) < new Date(o.createdAt)) userMap[uid].last_order = o.createdAt;
+      });
 
-    setCustomers(Object.values(userMap));
+      setCustomers(Object.values(userMap));
+    } catch (e) {
+      console.error('Failed to fetch orders for customers', e);
+      setCustomers([]);
+    }
     setLoading(false);
   };
 

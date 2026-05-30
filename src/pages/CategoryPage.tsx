@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft, SlidersHorizontal, Grid2X2, LayoutList } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -21,22 +20,20 @@ const CategoryPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      try {
+        const cRes = await fetch('/api/admin/categories').then(r => r.json());
+        const cats = cRes.categories || [];
+        setAllCategories(cats);
+        const cat = cats.find((c: any) => c.slug === slug) || null;
+        setCategory(cat);
 
-      const [{ data: cats }, { data: cat }] = await Promise.all([
-        supabase.from("categories").select("*").order("sort_order"),
-        supabase.from("categories").select("*").eq("slug", slug || "").maybeSingle(),
-      ]);
-
-      setAllCategories(cats || []);
-      setCategory(cat);
-
-      if (cat) {
-        const { data: prods } = await supabase
-          .from("products")
-          .select("*")
-          .eq("category", cat.name)
-          .order("created_at", { ascending: false });
-        setProducts((prods || []).map(mapProduct));
+        if (cat) {
+          const pRes = await fetch(`/api/products?category=${encodeURIComponent(cat.name)}&limit=100`);
+          const pJson = await pRes.json();
+          setProducts((pJson.products || []).map(mapProduct));
+        }
+      } catch (e) {
+        console.error('Failed to load category data', e);
       }
       setLoading(false);
     };
