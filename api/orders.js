@@ -45,8 +45,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    const user = await getUserFromRequest(req);
     const body = req.body || JSON.parse(req.rawBody || '{}');
-    const { items, user, shipping, total } = body;
+    const { items, shipping, total } = body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       res.status(400).json({ error: 'Invalid order items' });
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
 
     const order = {
       items,
-      user: user || null,
+      user: user ? { id: user.id, email: user.email, name: user.name } : null,
       shipping: shipping || null,
       total: total || items.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0),
       status: 'pending',

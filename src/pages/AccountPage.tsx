@@ -59,14 +59,28 @@ const AccountPage = () => {
       <Navbar />
       <main className="pt-12 pb-16">
         <div className="container-tight px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div>
-              <h1 className="font-display text-3xl text-foreground">My Account</h1>
-              <p className="text-sm text-muted-foreground mt-1">{user.email}</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 p-5 sm:p-6 bg-card rounded-3xl border border-border shadow-soft">
+            <div className="flex items-center gap-4">
+              {user.picture ? (
+                <img
+                  src={user.picture}
+                  alt={user.name || "User Profile"}
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border border-border shadow-sm"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <User className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+                </div>
+              )}
+              <div>
+                <h1 className="font-display text-2xl sm:text-3xl text-foreground">{user.name || "My Account"}</h1>
+                <p className="text-sm text-muted-foreground mt-0.5">{user.email}</p>
+              </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 self-start sm:self-center">
               {isAdmin && (
-                <Link to="/admin" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium">
+                <Link to="/admin" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-all shadow-soft">
                   Admin Panel
                 </Link>
               )}
