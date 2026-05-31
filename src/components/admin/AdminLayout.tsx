@@ -38,7 +38,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="h-16 flex items-center justify-between px-4 border-b border-border">
           {!collapsed && (
             <Link to="/" className="font-display text-xl text-foreground">
-              Chef<span className="text-primary">Ease</span>
+              Kitchub <span className="text-primary">Store</span>
             </Link>
           )}
           <button

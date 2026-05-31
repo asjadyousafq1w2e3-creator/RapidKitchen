@@ -4,7 +4,7 @@ import { useProducts, useCategories } from "@/hooks/use-products";
 import ProductCard from "./ProductCard";
 
 const FeaturedProducts = () => {
-  const { data: products = [] } = useProducts(12);
+  const { data: products = [], isLoading } = useProducts(12);
   const { data: categories = ["All"] } = useCategories();
   const [active, setActive] = useState("All");
 
@@ -37,11 +37,29 @@ const FeaturedProducts = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-        {filtered.map((product: any, i: number) => (
-          <ProductCard key={product.id} product={product} index={i} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-card rounded-2xl p-3 sm:p-5 border border-border shadow-soft animate-pulse flex flex-col space-y-4">
+              <div className="aspect-square rounded-xl bg-muted w-full" />
+              <div className="space-y-2 flex-1 pt-1">
+                <div className="h-4 bg-muted rounded-full w-3/4" />
+                <div className="h-3 bg-muted rounded-full w-1/2" />
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                <div className="h-5 bg-muted rounded-full w-1/3" />
+                <div className="h-8 bg-muted rounded-xl w-8" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          {filtered.map((product: any, i: number) => (
+            <ProductCard key={product.id} product={product} index={i} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };
