@@ -5,6 +5,10 @@
       "destination": "/api/auth.js"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap.js"
+    },
+    {
       "source": "/api/auth/:path*",
       "destination": "/api/auth.js"
     },
