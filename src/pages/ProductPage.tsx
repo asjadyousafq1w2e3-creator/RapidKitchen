@@ -123,7 +123,7 @@ const ProductPage = () => {
             {/* Left: Image */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
               <div className="aspect-square rounded-3xl overflow-hidden bg-secondary shadow-soft">
-                <img src={product.images[selectedImage]} alt={product.name} className="w-full h-full object-cover" />
+                <img src={product.images[selectedImage]} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </div>
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
                 {product.images.map((img: string, i: number) => (
@@ -132,7 +132,7 @@ const ProductPage = () => {
                     onClick={() => setSelectedImage(i)}
                     className={`w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden border-2 transition-all ${selectedImage === i ? "border-primary" : "border-transparent"}`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   </button>
                 ))}
               </div>

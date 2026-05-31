@@ -3,47 +3,6 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, ShoppingBag, Star, Truck, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
-import { products } from "@/data/products";
-import heroImage1 from "@/assets/hero-kitchen.jpg";
-import heroImage2 from "@/assets/hero-slide-2.jpg";
-import heroImage3 from "@/assets/hero-slide-3.jpg";
-
-// Pick 3 star products to feature
-const featuredProducts = [
-  products.find((p) => p.id === "aero-blend-mixer")!,
-  products.find((p) => p.id === "smart-chopper-pro")!,
-  products.find((p) => p.id === "ceramic-knife-set")!,
-];
-
-const slides = [
-  {
-    bg: heroImage1,
-    product: featuredProducts[0],
-    tag: "🔥 Top Rated — 312 Reviews",
-    headingLine1: "Blend Smarter,",
-    headingAccent: "Not Harder",
-    highlight: "Save PKR 2,000",
-    urgency: "Only 12 left in stock",
-  },
-  {
-    bg: heroImage2,
-    product: featuredProducts[1],
-    tag: "⭐ Best Seller — 234 Reviews",
-    headingLine1: "Chop, Mince,",
-    headingAccent: "Done in Seconds",
-    highlight: "31% OFF",
-    urgency: "Free shipping today",
-  },
-  {
-    bg: heroImage3,
-    product: featuredProducts[2],
-    tag: "🏆 Chef's Favorite",
-    headingLine1: "Cut Like a",
-    headingAccent: "Master Chef",
-    highlight: "Save PKR 1,700",
-    urgency: "Includes knife block",
-  },
-];
 
 const SLIDE_DURATION = 7000;
 
@@ -52,27 +11,132 @@ const Hero = () => {
   const [[current, direction], setCurrent] = useState([0, 0]);
   const [isPaused, setIsPaused] = useState(false);
   const { addItem } = useCart();
+  const [slides, setSlides] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
+  useEffect(() => {
+    const loadHeroData = async () => {
+      try {
+        const [pRes, sRes] = await Promise.all([
+          fetch('/api/products').then(r => r.json()),
+          fetch('/api/admin/settings').then(r => r.json())
+        ]);
+        
+        const allProducts = pRes.products || [];
+        const settingsList = sRes.settings || [];
+        const heroSlidesSetting = settingsList.find((s: any) => s.key === "hero_slides");
+        
+        let rawSlides = [];
+        if (heroSlidesSetting && heroSlidesSetting.value) {
+          try {
+            rawSlides = JSON.parse(heroSlidesSetting.value);
+          } catch (err) {
+            console.error('Failed to parse hero_slides', err);
+          }
+        }
+        
+        if (!rawSlides || rawSlides.length === 0) {
+          // Use default static fallbacks mapped to database products
+          rawSlides = [
+            {
+              bg: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=600&fit=crop",
+              productId: "aero-blend-mixer",
+              tag: "🔥 Top Rated — 312 Reviews",
+              headingLine1: "Blend Smarter,",
+              headingAccent: "Not Harder",
+              urgency: "Only 12 left in stock",
+            },
+            {
+              bg: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=1200&h=600&fit=crop",
+              productId: "smart-chopper-pro",
+              tag: "⭐ Best Seller — 234 Reviews",
+              headingLine1: "Chop, Mince,",
+              headingAccent: "Done in Seconds",
+              urgency: "Free shipping today",
+            },
+            {
+              bg: "https://images.unsplash.com/photo-1593618998160-e34014e67546?w=1200&h=600&fit=crop",
+              productId: "ceramic-knife-set",
+              tag: "🏆 Chef's Favorite",
+              headingLine1: "Cut Like a",
+              headingAccent: "Master Chef",
+              urgency: "Includes knife block",
+            }
+          ];
+        }
+        
+        // Map product details into the slides
+        const mappedSlides = rawSlides.map((slide: any) => {
+          const matchedProduct = allProducts.find(
+            (p: any) => p.slug === slide.productId || p.id === slide.productId
+          );
+          
+          return {
+            ...slide,
+            product: matchedProduct || {
+              id: slide.productId,
+              name: slide.productId.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+              price: 5000,
+              shortDescription: "Premium kitchen product from Kitchub Store",
+              images: [slide.bg],
+              category: "Premium",
+              rating: 4.8,
+              reviewCount: 120,
+              inStock: true,
+              features: []
+            }
+          };
+        });
+        
+        setSlides(mappedSlides);
+      } catch (e) {
+        console.error('Failed to load hero slideshow data', e);
+      }
+      setLoading(false);
+    };
+    
+    loadHeroData();
+  }, []);
+
   const paginate = useCallback(
-    (dir: number) => setCurrent(([prev]) => [(prev + dir + slides.length) % slides.length, dir]),
-    []
+    (dir: number) => {
+      if (slides.length === 0) return;
+      setCurrent(([prev]) => [(prev + dir + slides.length) % slides.length, dir]);
+    },
+    [slides.length]
   );
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || slides.length === 0) return;
     const timer = setInterval(() => paginate(1), SLIDE_DURATION);
     return () => clearInterval(timer);
-  }, [isPaused, paginate]);
+  }, [isPaused, paginate, slides.length]);
+
+  if (loading || slides.length === 0) {
+    return (
+      <div className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center bg-card border-b border-border/50 animate-pulse">
+        <div className="text-center space-y-4">
+          <div className="h-6 bg-muted rounded-full w-48 mx-auto" />
+          <div className="h-12 bg-muted rounded-full w-96 mx-auto" />
+          <div className="h-4 bg-muted rounded-full w-64 mx-auto" />
+        </div>
+      </div>
+    );
+  }
 
   const slide = slides[current];
   const product = slide.product;
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
+    : product.original_price
+      ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
+      : 0;
+
+  const originalPrice = product.originalPrice || product.original_price;
 
   return (
     <section
@@ -147,14 +211,14 @@ const Hero = () => {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="mb-5 sm:mb-6"
               >
-                <p className="text-sm sm:text-base text-muted-foreground mb-3">{product.shortDescription}</p>
+                <p className="text-sm sm:text-base text-muted-foreground mb-3">{product.shortDescription || product.short_description}</p>
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-2xl sm:text-3xl font-display font-bold text-foreground">
                     PKR {product.price.toLocaleString()}
                   </span>
-                  {product.originalPrice && (
+                  {originalPrice && (
                     <span className="text-lg text-muted-foreground line-through">
-                      PKR {product.originalPrice.toLocaleString()}
+                      PKR {originalPrice.toLocaleString()}
                     </span>
                   )}
                   {discount > 0 && (
@@ -174,7 +238,7 @@ const Hero = () => {
                     ))}
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {product.rating} ({product.reviewCount} reviews)
+                    {product.rating} ({product.reviewCount || product.review_count || 120} reviews)
                   </span>
                 </div>
               </motion.div>
@@ -267,11 +331,12 @@ const Hero = () => {
                     </div>
                   )}
                   {/* Product image */}
-                  <div className="aspect-square overflow-hidden">
+                  <div className="aspect-square overflow-hidden bg-secondary">
                     <img
-                      src={product.images[0]}
+                      src={product.images && product.images[0] ? product.images[0] : slide.bg}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      loading="lazy"
                     />
                   </div>
                   {/* Bottom info strip */}
@@ -279,15 +344,15 @@ const Hero = () => {
                     <h3 className="font-display text-lg text-foreground mb-1 group-hover:text-primary transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-3">{product.shortDescription}</p>
+                    <p className="text-sm text-muted-foreground mb-3">{product.shortDescription || product.short_description}</p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-baseline gap-2">
                         <span className="text-xl font-bold text-foreground">
                           PKR {product.price.toLocaleString()}
                         </span>
-                        {product.originalPrice && (
+                        {originalPrice && (
                           <span className="text-sm text-muted-foreground line-through">
-                            PKR {product.originalPrice.toLocaleString()}
+                            PKR {originalPrice.toLocaleString()}
                           </span>
                         )}
                       </div>
