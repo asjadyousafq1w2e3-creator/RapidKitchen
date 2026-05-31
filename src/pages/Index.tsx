@@ -21,8 +21,9 @@ const SectionLoader = () => (
 const Index = () => (
   <>
     <Helmet>
-      <title>Kitchub Store | Premium Daily Home & Kitchen Products</title>
-      <meta name="description" content="Discover premium daily home products and kitchen essentials tailored for your dynamic lifestyle. Create your perfect home with Kitchub Store." />
+      <title>Kitchub Store | Smart Kitchen Products & Premium Home Decor</title>
+      <meta name="description" content="Shop Kitchub Store for top-quality kitchen products, leakproof cooking oil sprayers, insulated tumblers, and elegant home decoration pieces. Elevate your kitchen and home decor today!" />
+      <meta name="keywords" content="kitchen products, home decoration pieces, cooking oil sprayer, premium tumbler, kitchen gadgets, home decor, mom essentials, smart kitchen tools, kitchub" />
       <link rel="canonical" href="https://kitchub.store" />
     </Helmet>
     <Navbar />

@@ -40,8 +40,9 @@ const ShopPage = () => {
   return (
     <>
       <Helmet>
-        <title>Shop All | Kitchub Store</title>
-        <meta name="description" content="Browse our entire collection of premium kitchen and daily home products." />
+        <title>Shop Kitchen Products, Tumblers & Home Decor | Kitchub Store</title>
+        <meta name="description" content="Explore Kitchub Store's entire collection of premium kitchen products, leakproof cooking oil sprayers, insulated tumblers, and modern home decoration pieces at the best prices." />
+        <meta name="keywords" content="kitchen products, home decoration pieces, cooking oil sprayer, insulated tumbler, kitchen store, home decor accessories, kitchub shop" />
         <link rel="canonical" href="https://kitchub.store/shop" />
       </Helmet>
       <Navbar />
