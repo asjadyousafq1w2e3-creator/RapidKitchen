@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       const list = await wishlists.find({ userId: user.id }).sort({ createdAt: -1 }).toArray();
       const productIds = list.map((w) => new ObjectId(w.productId));
       const prods = productIds.length ? await products.find({ _id: { $in: productIds } }).toArray() : [];
-      const map = prods.reduce((acc, p) => { acc[p._id.toString()] = p; return acc; }, {} as any);
+      const map = prods.reduce((acc, p) => { acc[p._id.toString()] = p; return acc; }, {});
       const enriched = list.map(w => ({ ...w, id: w._id.toString(), products: map[w.productId] ? [map[w.productId]] : [], product: map[w.productId] || null }));
       return res.json({ wishlists: enriched });
     }

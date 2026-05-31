@@ -1,16 +1,31 @@
 import connectToDatabase from './_utils/mongodb.js';
 import { ObjectId } from 'mongodb';
+import cache from './_utils/cache.js';
 
 // 1. Categories Handler
 async function categoriesHandler(req, res) {
   const { method } = req;
-  const { db } = await connectToDatabase();
-  const cats = db.collection('categories');
 
   if (method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=30');
+    const cacheKey = 'categories:all';
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.json(cached);
+    }
+
+    res.setHeader('X-Cache', 'MISS');
+    const { db } = await connectToDatabase();
+    const cats = db.collection('categories');
     const list = await cats.find({}).sort({ sort_order: 1, name: 1 }).toArray();
-    return res.json({ categories: list.map(c => ({ ...c, id: c._id.toString() })) });
+    const result = { categories: list.map(c => ({ ...c, id: c._id.toString() })) };
+    cache.set(cacheKey, result, 60); // Cache for 60s
+    return res.json(result);
   }
+
+  const { db } = await connectToDatabase();
+  const cats = db.collection('categories');
 
   if (method === 'POST') {
     const body = req.body;
@@ -27,6 +42,9 @@ async function categoriesHandler(req, res) {
     };
     const r = await cats.insertOne(doc);
     const saved = await cats.findOne({ _id: r.insertedId });
+    // Invalidate categories and dependent products cache
+    cache.delete('categories:all');
+    cache.clearPrefix('products:');
     return res.status(201).json({ category: { ...saved, id: saved._id.toString() } });
   }
 
@@ -39,6 +57,9 @@ async function categoriesHandler(req, res) {
     update.updatedAt = new Date();
     await cats.updateOne({ _id: id }, { $set: update });
     const updated = await cats.findOne({ _id: id });
+    // Invalidate categories and dependent products cache
+    cache.delete('categories:all');
+    cache.clearPrefix('products:');
     return res.json({ category: { ...updated, id: updated._id.toString() } });
   }
 
@@ -47,6 +68,9 @@ async function categoriesHandler(req, res) {
     if (!id) return res.status(400).json({ error: 'id required' });
     const oid = new ObjectId(id);
     await cats.deleteOne({ _id: oid });
+    // Invalidate categories and dependent products cache
+    cache.delete('categories:all');
+    cache.clearPrefix('products:');
     return res.json({ ok: true });
   }
 
@@ -57,13 +81,27 @@ async function categoriesHandler(req, res) {
 // 2. Products Handler
 async function productsHandler(req, res) {
   const { method } = req;
-  const { db } = await connectToDatabase();
-  const products = db.collection('products');
 
   if (method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=15, stale-while-revalidate=30');
+    const cacheKey = 'products:admin_all';
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.json(cached);
+    }
+
+    res.setHeader('X-Cache', 'MISS');
+    const { db } = await connectToDatabase();
+    const products = db.collection('products');
     const list = await products.find({}).sort({ createdAt: -1 }).toArray();
-    return res.json({ products: list.map(p => ({ ...p, id: p._id.toString() })) });
+    const result = { products: list.map(p => ({ ...p, id: p._id.toString() })) };
+    cache.set(cacheKey, result, 30); // Cache for 30s
+    return res.json(result);
   }
+
+  const { db } = await connectToDatabase();
+  const products = db.collection('products');
 
   if (method === 'POST') {
     const body = req.body;
@@ -71,6 +109,9 @@ async function productsHandler(req, res) {
     const doc = { ...body, createdAt: now, updatedAt: now };
     const r = await products.insertOne(doc);
     const saved = await products.findOne({ _id: r.insertedId });
+    // Invalidate products cache
+    cache.delete('products:admin_all');
+    cache.clearPrefix('products:');
     return res.status(201).json({ product: { ...saved, id: saved._id.toString() } });
   }
 
@@ -83,6 +124,9 @@ async function productsHandler(req, res) {
     update.updatedAt = new Date();
     await products.updateOne({ _id: id }, { $set: update });
     const updated = await products.findOne({ _id: id });
+    // Invalidate products cache
+    cache.delete('products:admin_all');
+    cache.clearPrefix('products:');
     return res.json({ product: { ...updated, id: updated._id.toString() } });
   }
 
@@ -91,6 +135,9 @@ async function productsHandler(req, res) {
     if (!id) return res.status(400).json({ error: 'id required' });
     const oid = new ObjectId(id);
     await products.deleteOne({ _id: oid });
+    // Invalidate products cache
+    cache.delete('products:admin_all');
+    cache.clearPrefix('products:');
     return res.json({ ok: true });
   }
 
@@ -164,13 +211,27 @@ async function couponsHandler(req, res) {
 // 4. Settings Handler
 async function settingsHandler(req, res) {
   const { method } = req;
-  const { db } = await connectToDatabase();
-  const settings = db.collection('store_settings');
 
   if (method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=60');
+    const cacheKey = 'settings:all';
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.json(cached);
+    }
+
+    res.setHeader('X-Cache', 'MISS');
+    const { db } = await connectToDatabase();
+    const settings = db.collection('store_settings');
     const list = await settings.find({}).toArray();
-    return res.json({ settings: list.map(s => ({ key: s.key, value: s.value })) });
+    const result = { settings: list.map(s => ({ key: s.key, value: s.value })) };
+    cache.set(cacheKey, result, 60); // Cache for 60s
+    return res.json(result);
   }
+
+  const { db } = await connectToDatabase();
+  const settings = db.collection('store_settings');
 
   if (method === 'POST') {
     const body = req.body || {};
@@ -179,6 +240,8 @@ async function settingsHandler(req, res) {
       updateOne: { filter: { key }, update: { $set: { key, value } }, upsert: true }
     }));
     if (ops.length) await settings.bulkWrite(ops);
+    // Invalidate settings cache
+    cache.delete('settings:all');
     return res.json({ ok: true });
   }
 
