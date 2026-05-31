@@ -9,7 +9,9 @@ const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 function buildRedirectUri(req) {
   const host = process.env.BASE_URL || `${req.headers['x-forwarded-host'] || req.headers.host}`;
-  return `https://${host}/api/auth/google`;
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+  const protocol = isLocal ? 'http' : 'https';
+  return `${protocol}://${host}/oauth2callback`;
 }
 
 // 1. Signin Handler
@@ -183,7 +185,9 @@ export default async function handler(req, res) {
   const parts = pathname.split('/').filter(Boolean);
   const action = parts[parts.length - 1]; // "signin", "signup", "me", "signout", "google"
 
-  if (action === 'signin') {
+  if (pathname === '/oauth2callback' || action === 'google') {
+    return googleHandler(req, res);
+  } else if (action === 'signin') {
     return signinHandler(req, res);
   } else if (action === 'signup') {
     return signupHandler(req, res);
@@ -191,8 +195,6 @@ export default async function handler(req, res) {
     return meHandler(req, res);
   } else if (action === 'signout') {
     return signoutHandler(req, res);
-  } else if (action === 'google') {
-    return googleHandler(req, res);
   } else {
     return res.status(404).json({ error: `Not found: ${action}` });
   }
