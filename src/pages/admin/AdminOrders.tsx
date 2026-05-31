@@ -112,13 +112,13 @@ const AdminOrders = () => {
                 {filtered.map((order) => (
                   <tr key={order.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                     <td className="py-3 px-4 font-medium text-foreground">#{order.id.slice(0, 8)}</td>
-                    <td className="py-3 px-4 text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</td>
-                    <td className="py-3 px-4 text-muted-foreground hidden sm:table-cell">{order.order_items?.length || 0} items</td>
+                    <td className="py-3 px-4 text-muted-foreground">{new Date(order.createdAt || order.created_at).toLocaleDateString()}</td>
+                    <td className="py-3 px-4 text-muted-foreground hidden sm:table-cell">{(order.items || order.order_items || []).length} items</td>
                     <td className="py-3 px-4">
                       <select
                         value={order.status}
                         onChange={(e) => updateStatus(order.id, e.target.value)}
-                        className="text-xs px-2 py-1 rounded-lg bg-secondary border-none text-foreground outline-none cursor-pointer"
+                        className="text-xs px-2 py-1 rounded-lg bg-secondary border-none text-foreground outline-none cursor-pointer font-medium"
                       >
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
@@ -127,8 +127,10 @@ const AdminOrders = () => {
                         <option value="cancelled">Cancelled</option>
                       </select>
                     </td>
-                    <td className="py-3 px-4 text-muted-foreground hidden md:table-cell capitalize">{order.payment_method}</td>
-                    <td className="py-3 px-4 text-right font-medium text-foreground">PKR {order.total_price?.toLocaleString()}</td>
+                    <td className="py-3 px-4 text-muted-foreground hidden md:table-cell capitalize">
+                      {order.shipping?.paymentMethod || order.payment_method || 'Cash on Delivery'}
+                    </td>
+                    <td className="py-3 px-4 text-right font-medium text-foreground">PKR {(order.total || order.total_price || 0).toLocaleString()}</td>
                     <td className="py-3 px-4 text-right">
                       <button
                         onClick={() => setSelectedOrder(order)}
@@ -171,42 +173,62 @@ const AdminOrders = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="font-display text-xl text-foreground">Order #{selectedOrder.id.slice(0, 8)}</h3>
-                  <button onClick={() => setSelectedOrder(null)} className="p-2 rounded-lg hover:bg-secondary"><X className="w-4 h-4" /></button>
+                  <h3 className="font-display text-xl text-foreground font-semibold">Order #{(selectedOrder.id || selectedOrder._id || '').toString().slice(0, 8)}</h3>
+                  <button onClick={() => setSelectedOrder(null)} className="p-2 rounded-xl hover:bg-secondary transition-colors"><X className="w-4 h-4" /></button>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div><span className="text-muted-foreground">Status:</span> <StatusBadge status={selectedOrder.status} /></div>
-                    <div><span className="text-muted-foreground">Payment:</span> <span className="text-foreground capitalize">{selectedOrder.payment_method}</span></div>
-                    <div><span className="text-muted-foreground">Date:</span> <span className="text-foreground">{new Date(selectedOrder.created_at).toLocaleString()}</span></div>
-                    <div><span className="text-muted-foreground">Total:</span> <span className="font-bold text-foreground">PKR {selectedOrder.total_price?.toLocaleString()}</span></div>
+                <div className="space-y-5">
+                  <div className="grid grid-cols-2 gap-3 text-sm border-b border-border/50 pb-4">
+                    <div><span className="text-muted-foreground font-medium">Status:</span> <StatusBadge status={selectedOrder.status} /></div>
+                    <div><span className="text-muted-foreground font-medium">Payment:</span> <span className="text-foreground font-semibold capitalize">{selectedOrder.shipping?.paymentMethod || selectedOrder.payment_method || 'Cash on Delivery'}</span></div>
+                    <div><span className="text-muted-foreground font-medium">Date:</span> <span className="text-foreground">{new Date(selectedOrder.createdAt || selectedOrder.created_at).toLocaleString()}</span></div>
+                    <div><span className="text-muted-foreground font-medium">Total:</span> <span className="font-bold text-foreground">PKR {(selectedOrder.total || selectedOrder.total_price || 0).toLocaleString()}</span></div>
                   </div>
 
-                  {selectedOrder.shipping_address && (
-                    <div className="bg-secondary/50 rounded-xl p-4">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Shipping Address</p>
-                      <div className="text-sm text-foreground">
-                        <p>{(selectedOrder.shipping_address as any)?.firstName} {(selectedOrder.shipping_address as any)?.lastName}</p>
-                        <p>{(selectedOrder.shipping_address as any)?.address}</p>
-                        <p>{(selectedOrder.shipping_address as any)?.city}, {(selectedOrder.shipping_address as any)?.state} {(selectedOrder.shipping_address as any)?.zip}</p>
-                        <p>{(selectedOrder.shipping_address as any)?.phone}</p>
-                        <p>{(selectedOrder.shipping_address as any)?.email}</p>
+                  {(() => {
+                    const shipping = selectedOrder.shipping || selectedOrder.shipping_address;
+                    if (!shipping) return null;
+                    return (
+                      <div className="bg-secondary/40 rounded-2xl p-4 border border-border/40">
+                        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-2">Shipping & Contact Details</p>
+                        <div className="text-sm text-foreground space-y-1">
+                          <p className="font-semibold text-base">{shipping.firstName} {shipping.lastName || ''}</p>
+                          <p className="text-muted-foreground">{shipping.address}</p>
+                          <p className="text-muted-foreground">{shipping.city}, {shipping.state || ''} {shipping.zip || ''}</p>
+                          <div className="flex flex-wrap gap-x-4 pt-2 text-xs border-t border-border/30 mt-2">
+                            <p><span className="text-muted-foreground font-medium">Phone:</span> {shipping.phone}</p>
+                            <p><span className="text-muted-foreground font-medium">Email:</span> {shipping.email}</p>
+                          </div>
+                          {shipping.notes && (
+                            <div className="mt-3 bg-background/50 rounded-xl p-2.5 border border-border/30">
+                              <span className="text-[10px] text-muted-foreground uppercase font-bold block mb-0.5">Order Note</span>
+                              <p className="text-xs italic text-muted-foreground">"{shipping.notes}"</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Items</p>
-                    <div className="space-y-2">
-                      {(selectedOrder.order_items || []).map((item: any) => (
-                        <div key={item.id} className="flex items-center gap-3 p-3 bg-background rounded-xl">
-                          {item.product_image && <img src={item.product_image} alt="" className="w-10 h-10 rounded-lg object-cover" />}
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-foreground">{item.product_name}</p>
-                            <p className="text-xs text-muted-foreground">Qty: {item.quantity} {item.color && `• ${item.color}`}</p>
+                    <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-2.5">Items Ordered</p>
+                    <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                      {(selectedOrder.items || selectedOrder.order_items || []).map((item: any, idx: number) => (
+                        <div key={item.id || idx} className="flex items-center gap-3 p-3 bg-secondary/30 rounded-xl border border-border/40 hover:bg-secondary/40 transition-colors">
+                          {item.image ? (
+                            <img src={item.image} alt="" className="w-11 h-11 rounded-lg object-cover shadow-sm flex-shrink-0" />
+                          ) : (
+                            <div className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 border border-border/50 text-muted-foreground font-bold">
+                              #
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-foreground truncate">{item.name || item.product_name}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Qty: {item.qty || item.quantity} {item.color && `• ${item.color}`}</p>
                           </div>
-                          <p className="text-sm font-medium text-foreground">PKR {(item.price * item.quantity).toLocaleString()}</p>
+                          <p className="text-sm font-bold text-foreground flex-shrink-0">
+                            PKR {((item.price || 0) * (item.qty || item.quantity || 1)).toLocaleString()}
+                          </p>
                         </div>
                       ))}
                     </div>

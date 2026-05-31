@@ -121,6 +121,8 @@ const CheckoutPage = () => {
             name: item.product.title || item.product.name || item.product.slug || 'Product',
             qty: item.quantity,
             price: item.product.price || item.price || 0,
+            image: item.product.images?.[0] || item.product.image || '',
+            color: item.color || null,
           })),
           shipping: shippingData,
           couponCode: couponApplied ? coupon : null,
