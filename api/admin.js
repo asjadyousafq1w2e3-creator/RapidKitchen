@@ -1,6 +1,7 @@
 import connectToDatabase from './_utils/mongodb.js';
 import { ObjectId } from 'mongodb';
 import cache from './_utils/cache.js';
+import { getUserFromRequest } from './_utils/auth.js';
 
 // 1. Categories Handler
 async function categoriesHandler(req, res) {
@@ -257,6 +258,19 @@ export default async function handler(req, res) {
   const resource = parts[parts.length - 1]; // "categories", "products", "coupons", "settings"
 
   try {
+    // SECURITY FIX: Authorize write operations (POST, PUT, DELETE) and ALL Coupon endpoints
+    // Prevents unauthorized bots/users from editing catalogs, settings, or leaking active discount codes
+    const { method } = req;
+    const isWrite = ['POST', 'PUT', 'DELETE'].includes(method);
+    const isCoupons = resource === 'coupons';
+    
+    if (isWrite || isCoupons) {
+      const user = await getUserFromRequest(req);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Admin access required' });
+      }
+    }
+
     if (resource === 'categories') {
       return await categoriesHandler(req, res);
     } else if (resource === 'products') {
