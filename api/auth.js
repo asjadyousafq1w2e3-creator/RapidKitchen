@@ -9,9 +9,13 @@ const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 function buildRedirectUri(req) {
   const host = process.env.BASE_URL || `${req.headers['x-forwarded-host'] || req.headers.host}`;
-  const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
-  const protocol = isLocal ? 'http' : 'https';
-  return `${protocol}://${host}/oauth2callback`;
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('8080');
+  
+  if (isLocal) {
+    return 'http://localhost:8080/oauth2callback';
+  }
+  // Force the exact whitelisted URI in production to completely prevent redirect_uri_mismatch
+  return 'https://www.kitchub.store/oauth2callback';
 }
 
 // 1. Signin Handler
